@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+  Écran de connexion.
+
+  Aucune logique ici : le FXML décrit la structure, le contrôleur décrit le
+  comportement. C'est la raison du choix de FXML plutôt que d'un JavaFX
+  entièrement programmatique — la frontière vue / contrôleur est physique.
+-->
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="fr.lahorde.arenaleague.controller.LoginController"
+      styleClass="ecran-connexion"
+      alignment="CENTER"
+      spacing="16"
+      prefWidth="420"
+      prefHeight="480">
+
+    <padding>
+        <Insets top="48" right="48" bottom="48" left="48"/>
+    </padding>
+
+    <Label text="ArenaLeague" styleClass="titre-application"/>
+    <Label text="Gestion de tournois eSport" styleClass="sous-titre"/>
+
+    <VBox spacing="8" maxWidth="280">
+        <padding><Insets top="24"/></padding>
+        <Label text="Identifiant" styleClass="etiquette-champ"/>
+        <TextField fx:id="champLogin" promptText="orga ou arbitre"/>
+    </VBox>
+
+    <VBox spacing="8" maxWidth="280">
+        <Label text="Mot de passe" styleClass="etiquette-champ"/>
+        <PasswordField fx:id="champMotDePasse"/>
+    </VBox>
+
+    <Label fx:id="messageErreur"
+           styleClass="message-erreur"
+           wrapText="true"
+           maxWidth="280"
+           visible="false"
+           managed="false"/>
+
+    <Button fx:id="boutonConnexion"
+            text="Se connecter"
+            onAction="#seConnecter"
+            defaultButton="true"
+            styleClass="bouton-principal"
+            maxWidth="280"
+            prefHeight="40"/>
+
+</VBox>

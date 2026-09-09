@@ -1,0 +1,126 @@
+/* =====================================================================
+   ArenaLeague — feuille de style
+   Palette alignée sur les documents de conception.
+   ===================================================================== */
+
+.root {
+    -fx-font-family: "Segoe UI", "Carlito", "Calibri", sans-serif;
+    -fx-font-size: 13px;
+    -fx-background-color: #FFFFFF;
+
+    accent:        #E63E52;
+    accent-fonce:  #A81F32;
+    encre:         #1F2328;
+    gris-texte:    #6E7781;
+    gris-bordure:  #DDE1E6;
+    gris-fond:     #F7F8FA;
+}
+
+/* ---------- Typographie ---------- */
+.titre-application {
+    -fx-font-size: 34px;
+    -fx-font-weight: bold;
+    -fx-text-fill: encre;
+}
+.sous-titre {
+    -fx-font-size: 14px;
+    -fx-text-fill: gris-texte;
+}
+.etiquette-champ {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: gris-texte;
+}
+.titre-section {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: encre;
+}
+
+/* ---------- Champs ---------- */
+.text-field, .password-field, .combo-box, .date-picker {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: gris-bordure;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 8 10 8 10;
+}
+.text-field:focused, .password-field:focused {
+    -fx-border-color: accent;
+}
+
+/* ---------- Boutons ---------- */
+.bouton-principal {
+    -fx-background-color: accent;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+.bouton-principal:hover  { -fx-background-color: accent-fonce; }
+.bouton-principal:disabled { -fx-opacity: 0.5; }
+
+.bouton-secondaire {
+    -fx-background-color: transparent;
+    -fx-text-fill: encre;
+    -fx-border-color: gris-bordure;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+.bouton-secondaire:hover { -fx-background-color: gris-fond; }
+
+/* ---------- Messages ---------- */
+/* Le message d'erreur doit se voir sans faire peur : encadré discret,
+   pas une boîte de dialogue modale qui coupe la démonstration. */
+.message-erreur {
+    -fx-background-color: #FDECEF;
+    -fx-border-color: #E8899A;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-text-fill: accent-fonce;
+    -fx-padding: 10;
+    -fx-font-size: 12px;
+}
+.message-info {
+    -fx-background-color: gris-fond;
+    -fx-border-color: gris-bordure;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-text-fill: encre;
+    -fx-padding: 10;
+}
+
+/* ---------- Barre supérieure ---------- */
+.barre-superieure {
+    -fx-background-color: #2B3038;
+    -fx-padding: 12 20 12 20;
+}
+.barre-superieure .label { -fx-text-fill: white; }
+.badge-role {
+    -fx-background-color: accent;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 3 8 3 8;
+    -fx-background-radius: 10;
+}
+
+/* ---------- Tableaux ---------- */
+.table-view {
+    -fx-border-color: gris-bordure;
+    -fx-border-radius: 4;
+}
+.table-view .column-header {
+    -fx-background-color: #2B3038;
+}
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+}
+.table-row-cell:odd { -fx-background-color: gris-fond; }
+.table-row-cell:selected { -fx-background-color: #FDECEF; -fx-text-fill: encre; }
+
+/* Ligne d'une équipe qualifiée — RG-46 */
+.ligne-qualifiee { -fx-font-weight: bold; }
