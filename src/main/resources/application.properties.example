@@ -1,0 +1,27 @@
+# ---------------------------------------------------------------------
+#  ArenaLeague — configuration
+#  Copier ce fichier en « application.properties » et adapter si besoin.
+#  Le fichier réel est ignoré par Git (voir .gitignore).
+# ---------------------------------------------------------------------
+
+# Profil : postgres (normal) ou h2 (repli de démonstration)
+app.profile=postgres
+
+# --- PostgreSQL, aligné sur docker-compose.yml ---
+db.postgres.url=jdbc:postgresql://localhost:5432/arenaleague
+db.postgres.user=arenaleague
+db.postgres.password=arenaleague
+
+# --- H2 embarqué, mode compatibilité PostgreSQL ---
+# Le même SQL de migration s'applique aux deux moteurs.
+db.h2.url=jdbc:h2:./data/arenaleague;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+db.h2.user=sa
+db.h2.password=
+
+# --- Pool de connexions ---
+db.pool.maxSize=10
+db.pool.minIdle=2
+db.pool.connectionTimeoutMs=5000
+
+# Applique les migrations Flyway au démarrage
+db.migrateOnStartup=true

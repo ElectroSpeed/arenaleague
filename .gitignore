@@ -1,0 +1,34 @@
+# --- Maven ---
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+dependency-reduced-pom.xml
+
+# --- Secrets : jamais versionnés (voir application.properties.example) ---
+src/main/resources/application.properties
+
+# --- IDE ---
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+nbproject/
+
+# --- Java ---
+*.class
+hs_err_pid*
+replay_pid*
+
+# --- Base H2 de repli ---
+*.mv.db
+*.trace.db
+
+# --- OS ---
+.DS_Store
+Thumbs.db
