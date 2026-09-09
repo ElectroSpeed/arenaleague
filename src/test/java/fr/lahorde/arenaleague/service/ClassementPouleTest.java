@@ -90,20 +90,105 @@ class ClassementPouleTest {
     }
 
     @Test
-    @DisplayName("RG-74 : à égalité parfaite, la confrontation directe départage")
-    void confrontationDirecte() {
-        Tournoi tournoi = poule("Xerus", "Yeti", "Zephyr");
+    @DisplayName("RG-71 : le nombre de points prime sur tout le reste")
+    void critere1Points() {
+        Tournoi tournoi = poule("Alpha", "Bravo", "Charlie");
         tournoi.demarrer(poule.genererMatchs(tournoi));
-        jouer(tournoi, "Xerus", "Yeti",   2, 1);
-        jouer(tournoi, "Xerus", "Zephyr", 0, 3);
-        jouer(tournoi, "Yeti",  "Zephyr", 0, 3);
+        jouer(tournoi, "Alpha", "Bravo",   1, 0);
+        jouer(tournoi, "Alpha", "Charlie", 1, 0);
+        jouer(tournoi, "Bravo", "Charlie", 1, 0);
 
-        // Xerus et Yeti sont à égalité ; Xerus a gagné leur duel, il passe devant
-        // alors que l'ordre alphabétique aurait donné le même résultat ici —
-        // le test vérifie surtout que le critère ne casse pas le classement.
         assertThat(poule.calculerClassement(tournoi))
             .extracting(l -> l.equipe().nom())
-            .containsExactly("Zephyr", "Xerus", "Yeti");
+            .containsExactly("Alpha", "Bravo", "Charlie");
+    }
+
+    @Test
+    @DisplayName("RG-72 : à points égaux, la différence départage")
+    void critere2Difference() {
+        Tournoi tournoi = poule("Alpha", "Bravo", "Charlie");
+        tournoi.demarrer(poule.genererMatchs(tournoi));
+        jouer(tournoi, "Alpha", "Charlie", 5, 0);   // Alpha : +5
+        jouer(tournoi, "Bravo", "Charlie", 1, 0);   // Bravo : +1
+        jouer(tournoi, "Alpha", "Bravo",   0, 0);   // 4 points chacun
+
+        List<LigneClassement> classement = poule.calculerClassement(tournoi);
+
+        assertThat(classement.get(0).points()).isEqualTo(classement.get(1).points());
+        assertThat(classement).extracting(l -> l.equipe().nom())
+            .startsWith("Alpha", "Bravo");
+    }
+
+    @Test
+    @DisplayName("RG-73 : à points et différence égaux, les points marqués départagent")
+    void critere3PointsMarques() {
+        Tournoi tournoi = poule("Alpha", "Bravo", "Charlie");
+        tournoi.demarrer(poule.genererMatchs(tournoi));
+        jouer(tournoi, "Alpha", "Charlie", 3, 1);   // Alpha : +2, marqués 3
+        jouer(tournoi, "Bravo", "Charlie", 2, 0);   // Bravo : +2, marqués 2
+        jouer(tournoi, "Alpha", "Bravo",   1, 1);
+
+        List<LigneClassement> classement = poule.calculerClassement(tournoi);
+        LigneClassement premier = classement.get(0);
+        LigneClassement second  = classement.get(1);
+
+        assertThat(premier.points()).isEqualTo(second.points());
+        assertThat(premier.difference()).isEqualTo(second.difference());
+        assertThat(premier.marques()).isGreaterThan(second.marques());
+        assertThat(premier.equipe().nom()).isEqualTo("Alpha");
+    }
+
+    @Test
+    @DisplayName("RG-74 : à égalité parfaite, la confrontation directe l'emporte "
+               + "sur l'ordre alphabétique")
+    void critere4ConfrontationDirecte() {
+        Tournoi tournoi = poule("Alpha", "Zulu", "Bravo", "Delta");
+        tournoi.demarrer(poule.genererMatchs(tournoi));
+        jouer(tournoi, "Zulu",  "Alpha", 1, 0);
+        jouer(tournoi, "Alpha", "Delta", 2, 1);
+        jouer(tournoi, "Bravo", "Alpha", 1, 0);
+        jouer(tournoi, "Bravo", "Zulu",  1, 0);
+        jouer(tournoi, "Delta", "Zulu",  2, 1);
+        jouer(tournoi, "Bravo", "Delta", 3, 0);
+
+        List<LigneClassement> classement = poule.calculerClassement(tournoi);
+        LigneClassement zulu  = classement.get(1);
+        LigneClassement alpha = classement.get(2);
+
+        // Strictement identiques sur les trois premiers critères...
+        assertThat(zulu.points()).isEqualTo(alpha.points());
+        assertThat(zulu.difference()).isEqualTo(alpha.difference());
+        assertThat(zulu.marques()).isEqualTo(alpha.marques());
+
+        // ...mais Zulu a gagné leur duel, il passe devant malgré l'alphabet.
+        assertThat(zulu.equipe().nom()).isEqualTo("Zulu");
+        assertThat(alpha.equipe().nom()).isEqualTo("Alpha");
+    }
+
+    @Test
+    @DisplayName("Le classement ne dépend pas de l'ordre d'inscription des équipes")
+    void resultatDeterministe() {
+        List<String> noms = new java.util.ArrayList<>(List.of("Alpha", "Bravo", "Charlie", "Delta"));
+        java.util.Set<List<String>> classementsObtenus = new java.util.HashSet<>();
+
+        for (int essai = 0; essai < 20; essai++) {
+            java.util.Collections.shuffle(noms, new java.util.Random(essai));
+
+            Tournoi tournoi = poule(noms.toArray(new String[0]));
+            tournoi.demarrer(poule.genererMatchs(tournoi));
+            jouer(tournoi, "Alpha",   "Bravo",   1, 1);
+            jouer(tournoi, "Alpha",   "Delta",   2, 0);
+            jouer(tournoi, "Alpha",   "Charlie", 0, 2);
+            jouer(tournoi, "Bravo",   "Delta",   2, 0);
+            jouer(tournoi, "Bravo",   "Charlie", 0, 2);
+            jouer(tournoi, "Charlie", "Delta",   3, 0);
+
+            classementsObtenus.add(poule.calculerClassement(tournoi).stream()
+                                       .map(l -> l.equipe().nom()).toList());
+        }
+
+        // Sans RG-75, l'ordre d'Alpha et Bravo dépendrait du parcours en mémoire.
+        assertThat(classementsObtenus).hasSize(1);
     }
 
     // ------------------------------------------------------------------
