@@ -9,24 +9,40 @@ classement se recalcule automatiquement à chaque score enregistré.
 
 ## Démarrage
 
-### 1. Lancer la base
-
-```bash
-docker compose up -d
-```
-
-PostgreSQL 16 démarre sur le port `5432`, avec un volume persistant.
-Les migrations Flyway s'appliquent seules au premier lancement de
-l'application : schéma (`V1`) puis jeu de données de démonstration (`V2`).
-
-### 2. Configurer
+### 1. Configurer
 
 ```bash
 cp src/main/resources/application.properties.example src/main/resources/application.properties
 ```
 
-Les valeurs par défaut correspondent au `docker-compose.yml`. Aucune
-modification n'est nécessaire pour un démarrage local.
+### 2. Préparer la base
+
+Deux options, au choix, sans aucun conteneur.
+
+**Option A — H2 embarqué (rien à installer)**
+
+Dans `application.properties` :
+
+```properties
+app.profile=h2
+```
+
+La base est un simple fichier dans `./data/`. Les migrations Flyway
+s'appliquent seules au premier lancement : schéma (`V1`) puis jeu de
+données de démonstration (`V2`). Supprimer le dossier `data/` remet tout
+à zéro — pratique pour répéter la démonstration.
+
+**Option B — PostgreSQL installé localement**
+
+Installer PostgreSQL 16 (postgresql.org/download), puis créer la base :
+
+```sql
+CREATE USER arenaleague WITH PASSWORD 'arenaleague';
+CREATE DATABASE arenaleague OWNER arenaleague;
+```
+
+Laisser `app.profile=postgres`. Le **même** SQL de migration s'applique
+aux deux moteurs : H2 tourne en mode compatibilité PostgreSQL.
 
 ### 3. Compiler et lancer
 
@@ -43,17 +59,21 @@ java -jar target/arenaleague-1.0.0.jar
 
 ---
 
-## Si Docker n'est pas disponible
+## Basculer de moteur
 
-Le sujet autorise H2 en repli. Dans `application.properties` :
+Une seule ligne à changer dans `application.properties` :
+`app.profile=h2` ou `app.profile=postgres`.
 
-```properties
-app.profile=h2
-```
+Aucun script de migration n'est à adapter — c'est tout l'intérêt d'avoir
+gardé du SQL standard plutôt que des extensions propriétaires. Si
+PostgreSQL refuse de démarrer le jour de la soutenance, le basculement
+prend dix secondes.
 
-Le même SQL de migration s'applique aux deux moteurs — H2 tourne en mode
-compatibilité PostgreSQL. C'est une assurance pour le jour de la
-soutenance, pas le mode de fonctionnement normal.
+**Le tri du classement ne dépend pas du moteur.** Le départage
+alphabétique (RG-75) est appliqué en Java, pas par une clause `ORDER BY`.
+Une collation française et une collation C ne classent pas `École` et
+`Ecole` de la même façon : faire porter le tri par la base rendrait le
+classement dépendant de l'installation.
 
 ---
 
@@ -143,7 +163,6 @@ exécutions du même calcul pourraient produire deux classements différents.
 
 ```
 arenaleague/
-├── docker-compose.yml              PostgreSQL 16 + volume
 ├── pom.xml
 └── src/
     ├── main/java/fr/lahorde/arenaleague/

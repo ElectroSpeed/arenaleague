@@ -4,16 +4,24 @@
 #  Le fichier réel est ignoré par Git (voir .gitignore).
 # ---------------------------------------------------------------------
 
-# Profil : postgres (normal) ou h2 (repli de démonstration)
+# Profil de base de données : postgres ou h2
+#
+#   postgres — PostgreSQL installé localement. Mode normal.
+#   h2       — H2 embarqué, aucun serveur à installer, un fichier sur disque.
+#              Repli autorisé par le sujet, et filet de sécurité le jour J.
+#
+# Le MÊME SQL de migration s'applique aux deux moteurs : H2 tourne en mode
+# compatibilité PostgreSQL. Basculer ne demande que de changer cette ligne.
 app.profile=postgres
 
-# --- PostgreSQL, aligné sur docker-compose.yml ---
+# --- PostgreSQL local ---
 db.postgres.url=jdbc:postgresql://localhost:5432/arenaleague
 db.postgres.user=arenaleague
 db.postgres.password=arenaleague
 
-# --- H2 embarqué, mode compatibilité PostgreSQL ---
-# Le même SQL de migration s'applique aux deux moteurs.
+# --- H2 embarqué ---
+# La base est un fichier dans ./data/. Le supprimer remet tout à zéro,
+# ce qui est pratique pour répéter la démonstration.
 db.h2.url=jdbc:h2:./data/arenaleague;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
 db.h2.user=sa
 db.h2.password=

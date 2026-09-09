@@ -25,7 +25,8 @@ nbproject/
 hs_err_pid*
 replay_pid*
 
-# --- Base H2 de repli ---
+# --- Base H2 embarquee ---
+data/
 *.mv.db
 *.trace.db
 
