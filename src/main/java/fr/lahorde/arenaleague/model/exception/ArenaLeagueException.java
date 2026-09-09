@@ -18,4 +18,8 @@ public abstract class ArenaLeagueException extends RuntimeException {
     protected ArenaLeagueException(String message) {
         super(message);
     }
+
+    protected ArenaLeagueException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
