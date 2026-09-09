@@ -32,17 +32,26 @@ s'appliquent seules au premier lancement : schéma (`V1`) puis jeu de
 données de démonstration (`V2`). Supprimer le dossier `data/` remet tout
 à zéro — pratique pour répéter la démonstration.
 
-**Option B — PostgreSQL installé localement**
+**Option B — PostgreSQL installé localement** *(mode par défaut)*
 
-Installer PostgreSQL 16 (postgresql.org/download), puis créer la base :
+Installer PostgreSQL 16 depuis postgresql.org/download, puis :
 
-```sql
-CREATE USER arenaleague WITH PASSWORD 'arenaleague';
-CREATE DATABASE arenaleague OWNER arenaleague;
+```bash
+psql -U postgres -f scripts/creer-base.sql
 ```
 
-Laisser `app.profile=postgres`. Le **même** SQL de migration s'applique
-aux deux moteurs : H2 tourne en mode compatibilité PostgreSQL.
+Le script crée le rôle `arenaleague` et la base du même nom. Laisser
+`app.profile=postgres` dans la configuration, les valeurs par défaut y
+correspondent déjà.
+
+Pour repartir de zéro entre deux répétitions de la démonstration :
+
+```bash
+psql -U postgres -f scripts/reinitialiser-base.sql
+```
+
+Le **même** SQL de migration s'applique aux deux moteurs : H2 tourne en
+mode compatibilité PostgreSQL.
 
 ### 3. Compiler et lancer
 
@@ -164,6 +173,7 @@ exécutions du même calcul pourraient produire deux classements différents.
 ```
 arenaleague/
 ├── pom.xml
+├── scripts/                        amorçage et remise à zéro PostgreSQL
 └── src/
     ├── main/java/fr/lahorde/arenaleague/
     │   ├── Launcher.java           point d'entrée du jar

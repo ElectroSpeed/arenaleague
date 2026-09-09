@@ -24,23 +24,13 @@ import java.sql.SQLException;
  * une écriture hors transaction est une erreur de conception, pas un cas à
  * rattraper silencieusement.
  */
-public final class ConnectionProvider {
+public final class ConnectionProvider implements Transactions {
 
     private final DataSource dataSource;
     private final ThreadLocal<Connection> courante = new ThreadLocal<>();
 
     public ConnectionProvider(DataSource dataSource) {
         this.dataSource = dataSource;
-    }
-
-    @FunctionalInterface
-    public interface Action<T> {
-        T executer();
-    }
-
-    @FunctionalInterface
-    public interface ActionSansResultat {
-        void executer();
     }
 
     /**
@@ -51,6 +41,7 @@ public final class ConnectionProvider {
      * ouvrir une seconde — sinon un service qui en appelle un autre créerait
      * deux transactions concurrentes sur la même opération métier.
      */
+    @Override
     public <T> T enTransaction(Action<T> action) {
         if (courante.get() != null) {
             return action.executer();          // déjà dans une transaction
@@ -76,10 +67,6 @@ public final class ConnectionProvider {
             courante.remove();
             fermer(connexion);
         }
-    }
-
-    public void enTransaction(ActionSansResultat action) {
-        enTransaction(() -> { action.executer(); return null; });
     }
 
     /** Connexion de la transaction courante. Réservé aux DAO. */
