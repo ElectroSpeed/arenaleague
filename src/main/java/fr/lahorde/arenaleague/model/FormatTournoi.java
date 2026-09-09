@@ -45,4 +45,17 @@ public interface FormatTournoi {
 
     /** RG-44 et RG-71 à RG-76 selon le format. Liste triée, rang renseigné. */
     List<LigneClassement> calculerClassement(Tournoi tournoi);
+
+    /**
+     * RG-35 : matchs du tour suivant, à générer après la clôture d'un match.
+     *
+     * Comportement par défaut : aucun match. C'est le cas de la poule, où
+     * tout est généré au démarrage — et c'est ce qui évite un
+     * « if (format == ELIMINATION_DIRECTE) » dans le service. Celui-ci appelle
+     * la méthode systématiquement et persiste ce qu'il reçoit : le plus
+     * souvent rien.
+     */
+    default List<Match> genererTourSuivant(Tournoi tournoi) {
+        return List.of();
+    }
 }

@@ -77,6 +77,7 @@ public final class EliminationDirecte implements FormatTournoi {
      * tournoi l'est. Le service ne teste donc rien : il persiste ce qu'il
      * reçoit, et ne reçoit rien quand il n'y a rien à faire.
      */
+    @Override
     public List<Match> genererTourSuivant(Tournoi tournoi) {
         int tourCourant = tournoi.dernierTour();
         if (tourCourant == 0 || !tournoi.tourTermine(tourCourant)) {
