@@ -6,9 +6,12 @@ import fr.lahorde.arenaleague.model.Organisateur;
 import fr.lahorde.arenaleague.model.Utilisateur;
 import fr.lahorde.arenaleague.repository.Transactions;
 import fr.lahorde.arenaleague.repository.TransactionsDirectes;
+import fr.lahorde.arenaleague.repository.EquipeRepository;
+import fr.lahorde.arenaleague.repository.MatchRepository;
 import fr.lahorde.arenaleague.repository.TournoiRepository;
 import fr.lahorde.arenaleague.repository.UtilisateurRepositoryEnMemoire;
 import fr.lahorde.arenaleague.service.exception.AccesRefuseException;
+import fr.lahorde.arenaleague.service.format.FabriqueFormat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,7 +58,8 @@ class AuthServiceTest {
         session = new SessionContext();
         auth = new AuthService(comptes, VERIFICATEUR, session, connexions);
         tournois = mock(TournoiRepository.class);
-        tournoiService = new TournoiService(tournois, session, connexions);
+        tournoiService = new TournoiService(tournois, mock(EquipeRepository.class),
+                mock(MatchRepository.class), new FabriqueFormat(), session, connexions);
     }
 
     // ------------------------------------------------------------------
