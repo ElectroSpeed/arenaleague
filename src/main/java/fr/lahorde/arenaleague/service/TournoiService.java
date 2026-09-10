@@ -117,6 +117,28 @@ public final class TournoiService {
         return connexions.enTransaction(() -> charger(tournoiId));
     }
 
+    /** RG-03 : le vivier d'equipes, pour l'ecran d'inscription. */
+    public List<Equipe> listerEquipes() {
+        session.exigerConnecte();
+        return connexions.enTransaction(equipes::toutes);
+    }
+
+    /**
+     * Contrainte d'effectif du format, telle que la strategie l'enonce.
+     *
+     * Existe pour que l'IHM puisse annoncer la regle avant que l'utilisateur
+     * ne la viole, sans jamais tester le format elle-meme : le texte vient de
+     * la strategie, pas d'un switch dans le controleur.
+     */
+    public String contrainteEffectif(Format format) {
+        return formats.pour(format).contrainteEffectif();
+    }
+
+    /** Meme delegation, pour refuser un effectif avant meme de creer le tournoi. */
+    public boolean nbEquipesValide(Format format, int nbEquipes) {
+        return formats.pour(format).nbEquipesValide(nbEquipes);
+    }
+
     /** RG-70 : classement recalculé à la demande, délégué à la stratégie. */
     public List<LigneClassement> classement(long tournoiId) {
         session.exigerConnecte();
