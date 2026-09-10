@@ -176,10 +176,11 @@ dépôt.
 **Phase 2 — production**, tâches suivies dans ClickUp
 (dossier *ArenaLeague — Projet*, liste *Phase 2 — Production*) :
 
-- 2.0 à 2.11 : **vérifiées sur poste** le 10 septembre 2026. `mvn clean
+- 2.0 à 2.12 : **vérifiées sur poste** le 10 septembre 2026. `mvn clean
   install` réussit, les 38 tests passent, l'application se lance et s'utilise
-  en profil H2, jusqu'à la génération automatique de la finale.
-- 2.12 à 2.13 : IHM restante — classement en direct, gestion des erreurs.
+  en profil H2, jusqu'à la génération automatique de la finale et au
+  recalcul du classement à chaque score, sans rafraîchissement.
+- 2.13 : gestion des erreurs dans l'IHM.
 
 **Avant chaque répétition de la démonstration**, supprimer `data/` : Flyway
 rejoue le seed. Le tableau de référence du classement n'apparaît que si l'on

@@ -60,6 +60,19 @@ public final class MatchService {
     }
 
     /**
+     * Pendant obligatoire d'abonner().
+     *
+     * Un écran qui s'abonne sans jamais se désabonner laisse un écouteur
+     * derrière lui à chaque passage : la liste enfle, et des contrôleurs
+     * remplacés continuent d'être notifiés — ils rafraîchiraient une vue qui
+     * n'est plus à l'écran. Le service ne peut pas le deviner, c'est
+     * l'abonné qui doit se retirer, et Vues s'en charge à la navigation.
+     */
+    public void desabonner(EcouteurClassement ecouteur) {
+        ecouteurs.remove(ecouteur);
+    }
+
+    /**
      * RG-51 : PLANIFIÉ → EN COURS.
      *
      * Aucun test sur l'état : si le match n'est pas planifié, c'est l'objet

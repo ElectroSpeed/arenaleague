@@ -1,10 +1,13 @@
 package fr.lahorde.arenaleague.controller;
 
 import fr.lahorde.arenaleague.AppContext;
+import fr.lahorde.arenaleague.model.LigneClassement;
 import fr.lahorde.arenaleague.model.Match;
 import fr.lahorde.arenaleague.model.Tournoi;
 import fr.lahorde.arenaleague.model.Utilisateur;
 import fr.lahorde.arenaleague.model.exception.ArenaLeagueException;
+import fr.lahorde.arenaleague.service.EcouteurClassement;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -17,6 +20,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.VBox;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.util.List;
 import java.util.Locale;
@@ -45,7 +50,7 @@ import java.util.Locale;
  *   tenter de saisir 2 – 2 ». La ligne est grisée, un avertissement annonce
  *   le refus, et le service le prononce réellement.
  */
-public final class SaisieResultatsController {
+public final class SaisieResultatsController implements Liberable {
 
     @FXML private Label nomTournoi;
     @FXML private Label formatTournoi;
@@ -59,6 +64,19 @@ public final class SaisieResultatsController {
     @FXML private TableColumn<Match, String> colonneScore;
     @FXML private TableColumn<Match, String> colonneEquipeB;
     @FXML private TableColumn<Match, String> colonneEtat;
+
+    @FXML private Label noteClassement;
+    @FXML private TableView<LigneClassement> tableClassement;
+    @FXML private TableColumn<LigneClassement, String> colonneRang;
+    @FXML private TableColumn<LigneClassement, String> colonneEquipe;
+    @FXML private TableColumn<LigneClassement, String> colonnePoints;
+    @FXML private TableColumn<LigneClassement, String> colonneJoues;
+    @FXML private TableColumn<LigneClassement, String> colonneVictoires;
+    @FXML private TableColumn<LigneClassement, String> colonneNuls;
+    @FXML private TableColumn<LigneClassement, String> colonneDefaites;
+    @FXML private TableColumn<LigneClassement, String> colonneMarques;
+    @FXML private TableColumn<LigneClassement, String> colonneEncaisses;
+    @FXML private TableColumn<LigneClassement, String> colonneDifference;
 
     @FXML private Label zoneAucuneSelection;
     @FXML private VBox detailMatch;
@@ -80,6 +98,20 @@ public final class SaisieResultatsController {
     private final Vues vues;
 
     private Long tournoiId;
+
+    /**
+     * Liste observable alimentant la table du classement. La TableView y est
+     * liée une fois pour toutes : rafraîchir revient à en remplacer le
+     * contenu, sans jamais retoucher la vue.
+     */
+    private final ObservableList<LigneClassement> classement = FXCollections.observableArrayList();
+
+    /**
+     * Abonnement conservé pour pouvoir s'en retirer. C'est ce même objet que
+     * liberer() transmet à desabonner() — une lambda recréée à la volée ne
+     * serait pas égale à celle qui a été enregistrée.
+     */
+    private final EcouteurClassement ecouteur = this::classementModifie;
 
     public SaisieResultatsController(AppContext contexte, Vues vues) {
         this.contexte = contexte;
@@ -118,6 +150,31 @@ public final class SaisieResultatsController {
             (observable, avant, apres) -> afficherDetail(apres));
 
         tableMatchs.setPlaceholder(etiquetteVide("Ce tournoi n'a aucun match."));
+
+        tableClassement.setItems(classement);
+        colonneRang.setCellValueFactory(c -> texte(String.valueOf(c.getValue().rang())));
+        colonneEquipe.setCellValueFactory(c -> texte(c.getValue().equipe().nom()));
+        colonneEquipe.setCellFactory(colonne -> new CelluleClassement("cellule-principale"));
+        colonnePoints.setCellValueFactory(c -> texte(String.valueOf(c.getValue().points())));
+        colonnePoints.setCellFactory(colonne -> new CelluleClassement("cellule-score"));
+        colonneJoues.setCellValueFactory(c -> texte(String.valueOf(c.getValue().joues())));
+        colonneVictoires.setCellValueFactory(c -> texte(String.valueOf(c.getValue().victoires())));
+        colonneNuls.setCellValueFactory(c -> texte(String.valueOf(c.getValue().nuls())));
+        colonneDefaites.setCellValueFactory(c -> texte(String.valueOf(c.getValue().defaites())));
+        colonneMarques.setCellValueFactory(c -> texte(String.valueOf(c.getValue().marques())));
+        colonneEncaisses.setCellValueFactory(c -> texte(String.valueOf(c.getValue().encaisses())));
+        colonneDifference.setCellValueFactory(c -> texte(differenceSignee(c.getValue())));
+
+        // RG-46 : une équipe qualifiée ressort en gras.
+        tableClassement.setRowFactory(table -> new LigneClassementQualifiee());
+        tableClassement.setPlaceholder(etiquetteVide("Aucun match terminé : le classement est vide."));
+
+        noteClassement.setText("Recalculé à chaque score enregistré, sans action de rafraîchissement "
+            + "(RG-63). Départage : points, différence, points marqués, confrontation directe, "
+            + "puis ordre alphabétique (RG-71 à RG-75).");
+
+        // Pattern Observer : le service prévient, l'écran se recalcule.
+        contexte.matchs().abonner(ecouteur);
 
         tournoiId = vues.parametre(Long.class);
         charger();
@@ -206,6 +263,8 @@ public final class SaisieResultatsController {
             resumeMatchs.setText(matchs.size() + " match(s) · " + termines
                 + " terminé(s) · " + (matchs.size() - termines) + " à jouer");
 
+            rafraichirClassement();
+
         } catch (ArenaLeagueException e) {
             afficher(messageErreur, e.getMessage());
         } catch (RuntimeException e) {
@@ -264,6 +323,49 @@ public final class SaisieResultatsController {
         champScoreB.setText(match.score() == null ? "" : String.valueOf(match.score().equipeB()));
     }
 
+    /**
+     * Recalcul délégué : le tri, y compris le Collator de RG-75, est fait en
+     * Java par la stratégie du format. L'écran n'ordonne rien lui-même — une
+     * TableView triable par l'utilisateur donnerait un ordre qui ne serait
+     * plus celui des règles de gestion.
+     */
+    private void rafraichirClassement() {
+        try {
+            classement.setAll(contexte.tournois().classement(tournoiId));
+        } catch (ArenaLeagueException e) {
+            afficher(messageErreur, e.getMessage());
+        } catch (RuntimeException e) {
+            afficher(messageErreur, "Le classement n'a pas pu être recalculé.");
+            System.err.println("Erreur technique au calcul du classement : " + e);
+        }
+    }
+
+    /**
+     * Pattern Observer, étape 7 de RG-63 : MatchService prévient ses abonnés
+     * qu'un score a changé, l'écran se recalcule. Aucun bouton de
+     * rafraîchissement, aucune scrutation.
+     *
+     * Le passage par Platform.runLater n'est pas de la prudence gratuite : le
+     * service ignore qu'il parle à une interface graphique, et rien ne
+     * garantit qu'il notifiera toujours depuis le fil JavaFX. C'est à
+     * l'abonné de revenir sur le bon fil.
+     */
+    private void classementModifie(long tournoiIdModifie) {
+        if (tournoiId != null && tournoiId == tournoiIdModifie) {
+            Platform.runLater(this::rafraichirClassement);
+        }
+    }
+
+    /**
+     * L'écran rend son abonnement quand il quitte la scène — appelé par Vues.
+     * Sans cela, chaque passage laisserait un écouteur de plus rafraîchir une
+     * vue qui n'est plus affichée.
+     */
+    @Override
+    public void liberer() {
+        contexte.matchs().desabonner(ecouteur);
+    }
+
     // ------------------------------------------------------------------
     //  Outils
     // ------------------------------------------------------------------
@@ -313,6 +415,38 @@ public final class SaisieResultatsController {
 
     private static ReadOnlyStringWrapper texte(String valeur) {
         return new ReadOnlyStringWrapper(valeur);
+    }
+
+    /** Le signe explicite se lit plus vite qu'un nombre nu dans une colonne. */
+    private static String differenceSignee(LigneClassement ligne) {
+        int difference = ligne.difference();
+        return difference > 0 ? "+" + difference : String.valueOf(difference);
+    }
+
+    private static final class CelluleClassement extends TableCell<LigneClassement, String> {
+
+        private CelluleClassement(String classe) {
+            getStyleClass().add(classe);
+        }
+
+        @Override
+        protected void updateItem(String valeur, boolean vide) {
+            super.updateItem(valeur, vide);
+            setText(vide ? null : valeur);
+        }
+    }
+
+    /** RG-46 : l'équipe qualifiée ressort, sans que la couleur seule le dise. */
+    private static final class LigneClassementQualifiee extends TableRow<LigneClassement> {
+
+        @Override
+        protected void updateItem(LigneClassement ligne, boolean vide) {
+            super.updateItem(ligne, vide);
+            getStyleClass().remove("ligne-qualifiee");
+            if (!vide && ligne != null && ligne.qualifiee()) {
+                getStyleClass().add("ligne-qualifiee");
+            }
+        }
     }
 
     private static final class CelluleTexte extends TableCell<Match, String> {

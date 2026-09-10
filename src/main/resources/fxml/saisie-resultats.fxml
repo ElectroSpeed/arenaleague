@@ -45,25 +45,58 @@
     </top>
 
     <center>
-        <VBox spacing="12">
+        <VBox spacing="18">
             <padding><Insets top="24" right="20" bottom="24" left="28"/></padding>
 
-            <VBox spacing="4">
-                <Label text="Matchs" styleClass="titre-section"/>
-                <Region styleClass="filet-accent" prefHeight="3" maxWidth="56" minHeight="3"/>
+            <VBox spacing="10" VBox.vgrow="ALWAYS">
+                <VBox spacing="4">
+                    <Label text="Matchs" styleClass="titre-section"/>
+                    <Region styleClass="filet-accent" prefHeight="3" maxWidth="56" minHeight="3"/>
+                </VBox>
+
+                <Label fx:id="resumeMatchs" styleClass="aide-champ" wrapText="true"/>
+
+                <TableView fx:id="tableMatchs" VBox.vgrow="ALWAYS" prefHeight="240">
+                    <columns>
+                        <TableColumn fx:id="colonneTour"    text="TOUR"     prefWidth="80"/>
+                        <TableColumn fx:id="colonneEquipeA" text="ÉQUIPE A" prefWidth="140"/>
+                        <TableColumn fx:id="colonneScore"   text="SCORE"    prefWidth="80"/>
+                        <TableColumn fx:id="colonneEquipeB" text="ÉQUIPE B" prefWidth="140"/>
+                        <TableColumn fx:id="colonneEtat"    text="ÉTAT"     prefWidth="120"/>
+                    </columns>
+                </TableView>
             </VBox>
 
-            <Label fx:id="resumeMatchs" styleClass="aide-champ" wrapText="true"/>
+            <!--
+              Le classement vit sur le même écran que la saisie, et non
+              derrière une navigation : c'est ce qui rend le rafraîchissement
+              visible au moment même où le score est validé. L'étape 4 du
+              scénario demande que « le classement se réordonne
+              immédiatement » — encore faut-il l'avoir sous les yeux.
+            -->
+            <VBox spacing="10" VBox.vgrow="ALWAYS">
+                <VBox spacing="4">
+                    <Label text="Classement" styleClass="titre-section"/>
+                    <Region styleClass="filet-accent" prefHeight="3" maxWidth="56" minHeight="3"/>
+                </VBox>
 
-            <TableView fx:id="tableMatchs" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="colonneTour"    text="TOUR"     prefWidth="90"/>
-                    <TableColumn fx:id="colonneEquipeA" text="ÉQUIPE A" prefWidth="150"/>
-                    <TableColumn fx:id="colonneScore"   text="SCORE"    prefWidth="90"/>
-                    <TableColumn fx:id="colonneEquipeB" text="ÉQUIPE B" prefWidth="150"/>
-                    <TableColumn fx:id="colonneEtat"    text="ÉTAT"     prefWidth="130"/>
-                </columns>
-            </TableView>
+                <Label fx:id="noteClassement" styleClass="aide-champ" wrapText="true"/>
+
+                <TableView fx:id="tableClassement" VBox.vgrow="ALWAYS" prefHeight="200">
+                    <columns>
+                        <TableColumn fx:id="colonneRang"      text="#"      prefWidth="46"/>
+                        <TableColumn fx:id="colonneEquipe"    text="ÉQUIPE" prefWidth="140"/>
+                        <TableColumn fx:id="colonnePoints"    text="PTS"    prefWidth="52"/>
+                        <TableColumn fx:id="colonneJoues"     text="J"      prefWidth="40"/>
+                        <TableColumn fx:id="colonneVictoires" text="V"      prefWidth="40"/>
+                        <TableColumn fx:id="colonneNuls"      text="N"      prefWidth="40"/>
+                        <TableColumn fx:id="colonneDefaites"  text="D"      prefWidth="40"/>
+                        <TableColumn fx:id="colonneMarques"   text="BM"     prefWidth="46"/>
+                        <TableColumn fx:id="colonneEncaisses" text="BE"     prefWidth="46"/>
+                        <TableColumn fx:id="colonneDifference" text="DIFF"  prefWidth="54"/>
+                    </columns>
+                </TableView>
+            </VBox>
         </VBox>
     </center>
 

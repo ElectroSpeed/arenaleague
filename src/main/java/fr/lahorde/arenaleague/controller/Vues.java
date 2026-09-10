@@ -46,6 +46,9 @@ public final class Vues {
      */
     private Object parametre;
 
+    /** Contrôleur actuellement à l'écran, pour pouvoir le libérer. */
+    private Object controleurCourant;
+
     /** Affiche la vue en lui transmettant une donnée de navigation. */
     public void afficher(String nomDeVue, String titre, Object parametre) {
         this.parametre = parametre;
@@ -65,6 +68,13 @@ public final class Vues {
 
     /** Remplace le contenu de la fenêtre par la vue demandée. */
     public void afficher(String nomDeVue, String titre) {
+        // Le contrôleur sortant rend ce qu'il détenait avant d'être remplacé.
+        // Sans ce point de sortie, un écran abonné à un service laisserait un
+        // écouteur derrière lui à chaque navigation.
+        if (controleurCourant instanceof Liberable liberable) {
+            liberable.liberer();
+        }
+
         Parent racine = charger(nomDeVue);
         Scene scene = new Scene(racine);
         var style = getClass().getResource(FEUILLE_DE_STYLE);
@@ -81,7 +91,9 @@ public final class Vues {
             FXMLLoader chargeur = new FXMLLoader(
                 getClass().getResource(CHEMIN_FXML + nomDeVue + ".fxml"));
             chargeur.setControllerFactory(this::instancier);
-            return chargeur.load();
+            Parent racine = chargeur.load();
+            controleurCourant = chargeur.getController();
+            return racine;
         } catch (IOException e) {
             throw new IllegalStateException("Chargement de la vue " + nomDeVue + " impossible", e);
         }
