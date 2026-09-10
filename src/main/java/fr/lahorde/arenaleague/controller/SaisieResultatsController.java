@@ -5,7 +5,6 @@ import fr.lahorde.arenaleague.model.LigneClassement;
 import fr.lahorde.arenaleague.model.Match;
 import fr.lahorde.arenaleague.model.Tournoi;
 import fr.lahorde.arenaleague.model.Utilisateur;
-import fr.lahorde.arenaleague.model.exception.ArenaLeagueException;
 import fr.lahorde.arenaleague.service.EcouteurClassement;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -99,6 +98,8 @@ public final class SaisieResultatsController implements Liberable {
 
     private Long tournoiId;
 
+    private GestionnaireErreurs erreurs;
+
     /**
      * Liste observable alimentant la table du classement. La TableView y est
      * liée une fois pour toutes : rafraîchir revient à en remplacer le
@@ -120,6 +121,7 @@ public final class SaisieResultatsController implements Liberable {
 
     @FXML
     private void initialize() {
+        erreurs = new GestionnaireErreurs(messageErreur, contexte.config().profil());
         masquerMessages();
 
         Utilisateur connecte = contexte.session().exigerConnecte();
@@ -191,14 +193,9 @@ public final class SaisieResultatsController implements Liberable {
             return;
         }
         masquerMessages();
-        try {
-            contexte.matchs().demarrer(tournoiId, match.id());
+        if (erreurs.executer("démarrer le match",
+                () -> contexte.matchs().demarrer(tournoiId, match.id()))) {
             recharger(match.id(), "Match démarré.");
-        } catch (ArenaLeagueException e) {
-            afficher(messageErreur, e.getMessage());
-        } catch (RuntimeException e) {
-            afficher(messageErreur, "Le démarrage a échoué pour une raison technique.");
-            System.err.println("Erreur technique au démarrage du match : " + e);
         }
     }
 
@@ -220,19 +217,12 @@ public final class SaisieResultatsController implements Liberable {
             return;
         }
 
-        try {
-            contexte.matchs().saisirScore(tournoiId, match.id(), scoreA, scoreB);
+        // Le message métier est affiché tel quel par le gestionnaire : c'est
+        // lui que la démonstration montre pour CE-02 (match clôturé) et CE-04
+        // (nul refusé en élimination directe).
+        if (erreurs.executer("enregistrer le score",
+                () -> contexte.matchs().saisirScore(tournoiId, match.id(), scoreA, scoreB))) {
             recharger(match.id(), "Score enregistré. Le classement a été recalculé.");
-
-        } catch (ArenaLeagueException e) {
-            // Message métier tel quel : c'est lui que la démonstration montre
-            // pour CE-02 (match clôturé) et CE-04 (nul en élimination directe).
-            afficher(messageErreur, e.getMessage());
-
-        } catch (RuntimeException e) {
-            afficher(messageErreur, "La saisie a échoué pour une raison technique. "
-                + "Le score n'a pas été enregistré.");
-            System.err.println("Erreur technique à la saisie du score : " + e);
         }
     }
 
@@ -247,30 +237,24 @@ public final class SaisieResultatsController implements Liberable {
 
     private void charger() {
         if (tournoiId == null) {
-            afficher(messageErreur, "Aucun tournoi sélectionné. Revenez à l'accueil "
+            erreurs.afficher("Aucun tournoi sélectionné. Revenez à l'accueil "
                 + "et ouvrez un tournoi depuis la liste.");
             return;
         }
-        try {
-            Tournoi tournoi = contexte.tournois().parId(tournoiId);
-            nomTournoi.setText(tournoi.nom());
-            formatTournoi.setText(tournoi.format().libelle());
+        erreurs.calculer("charger le tournoi", () -> contexte.tournois().parId(tournoiId))
+            .ifPresent(tournoi -> {
+                nomTournoi.setText(tournoi.nom());
+                formatTournoi.setText(tournoi.format().libelle());
 
-            List<Match> matchs = tournoi.matchs();
-            tableMatchs.getItems().setAll(matchs);
+                List<Match> matchs = tournoi.matchs();
+                tableMatchs.getItems().setAll(matchs);
 
-            long termines = matchs.stream().filter(Match::estTermine).count();
-            resumeMatchs.setText(matchs.size() + " match(s) · " + termines
-                + " terminé(s) · " + (matchs.size() - termines) + " à jouer");
+                long termines = matchs.stream().filter(Match::estTermine).count();
+                resumeMatchs.setText(matchs.size() + " match(s) · " + termines
+                    + " terminé(s) · " + (matchs.size() - termines) + " à jouer");
 
-            rafraichirClassement();
-
-        } catch (ArenaLeagueException e) {
-            afficher(messageErreur, e.getMessage());
-        } catch (RuntimeException e) {
-            afficher(messageErreur, "Le tournoi n'a pas pu être chargé.");
-            System.err.println("Erreur technique au chargement du tournoi : " + e);
-        }
+                rafraichirClassement();
+            });
     }
 
     /** Recharge depuis la base : l'écran montre l'état réellement persisté. */
@@ -330,14 +314,8 @@ public final class SaisieResultatsController implements Liberable {
      * plus celui des règles de gestion.
      */
     private void rafraichirClassement() {
-        try {
-            classement.setAll(contexte.tournois().classement(tournoiId));
-        } catch (ArenaLeagueException e) {
-            afficher(messageErreur, e.getMessage());
-        } catch (RuntimeException e) {
-            afficher(messageErreur, "Le classement n'a pas pu être recalculé.");
-            System.err.println("Erreur technique au calcul du classement : " + e);
-        }
+        erreurs.calculer("recalculer le classement", () -> contexte.tournois().classement(tournoiId))
+            .ifPresent(classement::setAll);
     }
 
     /**
@@ -402,7 +380,7 @@ public final class SaisieResultatsController implements Liberable {
     }
 
     private void masquerMessages() {
-        montrer(messageErreur, false);
+        erreurs.masquer();
         montrer(messageSucces, false);
     }
 

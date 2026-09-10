@@ -5,7 +5,6 @@ import fr.lahorde.arenaleague.model.Equipe;
 import fr.lahorde.arenaleague.model.Format;
 import fr.lahorde.arenaleague.model.Match;
 import fr.lahorde.arenaleague.model.Tournoi;
-import fr.lahorde.arenaleague.model.exception.ArenaLeagueException;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -80,6 +79,8 @@ public final class CreationTournoiController {
     private final AppContext contexte;
     private final Vues vues;
 
+    private GestionnaireErreurs erreurs;
+
     public CreationTournoiController(AppContext contexte, Vues vues) {
         this.contexte = contexte;
         this.vues = vues;
@@ -87,7 +88,8 @@ public final class CreationTournoiController {
 
     @FXML
     private void initialize() {
-        masquerErreur();
+        erreurs = new GestionnaireErreurs(messageErreur, contexte.config().profil());
+        erreurs.masquer();
 
         champDate.setValue(LocalDate.now());
 
@@ -129,16 +131,16 @@ public final class CreationTournoiController {
 
     @FXML
     private void creerEtGenerer() {
-        masquerErreur();
+        erreurs.masquer();
 
         String nom = champNom.getText() == null ? "" : champNom.getText().trim();
         if (nom.isEmpty()) {
-            afficherErreur("Donnez un nom au tournoi avant de continuer.");
+            erreurs.afficher("Donnez un nom au tournoi avant de continuer.");
             champNom.requestFocus();
             return;
         }
         if (champDate.getValue() == null) {
-            afficherErreur("Choisissez une date de début.");
+            erreurs.afficher("Choisissez une date de début.");
             champDate.requestFocus();
             return;
         }
@@ -150,12 +152,12 @@ public final class CreationTournoiController {
         // RG-22 interdisant de recommencer, il resterait en base sans usage.
         for (Equipe equipe : choisies) {
             if (!equipe.effectifValide()) {
-                afficherErreur(messageEffectif(equipe));
+                erreurs.afficher(messageEffectif(equipe));
                 return;
             }
         }
         if (!contexte.tournois().nbEquipesValide(format, choisies.size())) {
-            afficherErreur(etatSelection(format, choisies.size()));
+            erreurs.afficher(etatSelection(format, choisies.size()));
             return;
         }
 
@@ -163,25 +165,21 @@ public final class CreationTournoiController {
             return;
         }
 
-        try {
-            boutonGenerer.setDisable(true);
+        boutonGenerer.setDisable(true);
 
+        // Création, inscriptions et démarrage ne font qu'une opération aux
+        // yeux de l'utilisateur : un seul point de traduction d'erreur. Le
+        // refus de droit d'un Arbitre qui aurait forcé le passage y passe
+        // aussi, et son message s'affiche tel quel (CE-01).
+        boolean abouti = erreurs.executer("créer le tournoi", () -> {
             Tournoi tournoi = contexte.tournois().creerTournoi(nom, champDate.getValue(), format);
             for (Equipe equipe : choisies) {
                 contexte.tournois().inscrire(tournoi.id(), equipe.id());
             }
             afficherCalendrier(contexte.tournois().demarrer(tournoi.id()));
+        });
 
-        } catch (ArenaLeagueException e) {
-            // Métier : message écrit pour l'utilisateur final. Couvre aussi le
-            // refus de droit si un Arbitre a forcé le passage jusqu'ici.
-            afficherErreur(e.getMessage());
-            boutonGenerer.setDisable(false);
-
-        } catch (RuntimeException e) {
-            afficherErreur("La création a échoué pour une raison technique. "
-                + "Le tournoi n'a pas été enregistré, vous pouvez réessayer.");
-            System.err.println("Erreur technique à la création du tournoi : " + e);
+        if (!abouti) {
             boutonGenerer.setDisable(false);
         }
     }
@@ -231,14 +229,8 @@ public final class CreationTournoiController {
     // ------------------------------------------------------------------
 
     private void chargerEquipes() {
-        try {
-            listeEquipes.getItems().setAll(contexte.tournois().listerEquipes());
-        } catch (ArenaLeagueException e) {
-            afficherErreur(e.getMessage());
-        } catch (RuntimeException e) {
-            afficherErreur("La liste des équipes n'a pas pu être chargée.");
-            System.err.println("Erreur technique au chargement des équipes : " + e);
-        }
+        erreurs.calculer("charger la liste des équipes", () -> contexte.tournois().listerEquipes())
+            .ifPresent(equipes -> listeEquipes.getItems().setAll(equipes));
     }
 
     private void basculer(Equipe equipe, boolean retenue) {
@@ -250,7 +242,7 @@ public final class CreationTournoiController {
         } else {
             retenues.remove(equipe);
         }
-        masquerErreur();
+        erreurs.masquer();
         rafraichirCompteur();
     }
 
@@ -312,16 +304,6 @@ public final class CreationTournoiController {
     private void annoncerContrainteDuFormat(Format format) {
         contrainteFormat.setText(
             format == null ? "" : contexte.tournois().contrainteEffectif(format));
-    }
-
-    private void afficherErreur(String message) {
-        messageErreur.setText(message);
-        montrer(messageErreur);
-    }
-
-    private void masquerErreur() {
-        messageErreur.setVisible(false);
-        messageErreur.setManaged(false);
     }
 
     private static void montrer(javafx.scene.Node noeud) {

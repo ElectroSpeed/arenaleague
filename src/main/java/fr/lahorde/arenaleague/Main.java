@@ -2,6 +2,7 @@ package fr.lahorde.arenaleague;
 
 import fr.lahorde.arenaleague.config.AppConfig;
 import fr.lahorde.arenaleague.config.Database;
+import fr.lahorde.arenaleague.controller.GestionnaireErreurs;
 import fr.lahorde.arenaleague.controller.Vues;
 import javafx.application.Application;
 import javafx.scene.control.Alert;
@@ -30,6 +31,7 @@ public class Main extends Application {
             // On ne lève pas ici : sans fenêtre, le message serait invisible.
             this.erreurDeDemarrage = e.getMessage();
             System.err.println("Démarrage impossible : " + e);
+            e.printStackTrace();
         }
     }
 
@@ -39,6 +41,11 @@ public class Main extends Application {
             signalerEchec();
             return;
         }
+
+        // Installé avant le premier écran : à partir d'ici, plus aucune
+        // exception ne peut disparaître silencieusement dans la console.
+        GestionnaireErreurs.installerFiletDeSecurite(contexte.config().profil());
+
         new Vues(contexte, fenetre).afficher("login", "Connexion");
         fenetre.show();
     }

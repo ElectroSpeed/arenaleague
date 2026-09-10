@@ -2,7 +2,6 @@ package fr.lahorde.arenaleague.controller;
 
 import fr.lahorde.arenaleague.AppContext;
 import fr.lahorde.arenaleague.model.Utilisateur;
-import fr.lahorde.arenaleague.model.exception.ArenaLeagueException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -36,10 +35,12 @@ public final class LoginController {
         this.vues = vues;
     }
 
+    private GestionnaireErreurs erreurs;
+
     @FXML
     private void initialize() {
-        messageErreur.setVisible(false);
-        messageErreur.setManaged(false);
+        erreurs = new GestionnaireErreurs(messageErreur, contexte.config().profil());
+        erreurs.masquer();
 
         // Entrée valide la connexion : on ne fait pas chercher la souris à
         // l'arbitre pendant une démonstration chronométrée.
@@ -49,42 +50,30 @@ public final class LoginController {
 
     @FXML
     private void seConnecter() {
-        masquerErreur();
-
         // Le mot de passe est extrait en char[] et effacé par AuthService.
         // On vide aussi le champ : rien ne doit rester à l'écran.
         char[] motDePasse = champMotDePasse.getText().toCharArray();
 
         try {
             boutonConnexion.setDisable(true);
-            Utilisateur connecte = contexte.auth().authentifier(champLogin.getText(), motDePasse);
-            champMotDePasse.clear();
-            vues.afficher("accueil", connecte.login());
 
-        } catch (ArenaLeagueException e) {
-            // Exception métier : message tel quel, il est écrit pour l'utilisateur.
-            afficherErreur(e.getMessage());
-            champMotDePasse.clear();
-            champMotDePasse.requestFocus();
-
-        } catch (RuntimeException e) {
-            // Panne technique : on n'expose pas la trace à l'écran.
-            afficherErreur("La connexion à la base a échoué. Vérifiez que PostgreSQL est démarré.");
-            System.err.println("Erreur technique à la connexion : " + e);
+            // Le gestionnaire distingue refus métier et panne technique, et
+            // journalise les deux. Ici, un refus rend la main pour que le
+            // champ soit vidé et repris — le message, lui, est déjà affiché.
+            erreurs.calculer("vous connecter",
+                    () -> contexte.auth().authentifier(champLogin.getText(), motDePasse))
+                .ifPresentOrElse(
+                    connecte -> {
+                        champMotDePasse.clear();
+                        vues.afficher("accueil", connecte.login());
+                    },
+                    () -> {
+                        champMotDePasse.clear();
+                        champMotDePasse.requestFocus();
+                    });
 
         } finally {
             boutonConnexion.setDisable(false);
         }
-    }
-
-    private void afficherErreur(String message) {
-        messageErreur.setText(message);
-        messageErreur.setVisible(true);
-        messageErreur.setManaged(true);
-    }
-
-    private void masquerErreur() {
-        messageErreur.setVisible(false);
-        messageErreur.setManaged(false);
     }
 }

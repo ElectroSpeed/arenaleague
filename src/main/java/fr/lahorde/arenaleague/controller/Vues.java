@@ -75,7 +75,20 @@ public final class Vues {
             liberable.liberer();
         }
 
-        Parent racine = charger(nomDeVue);
+        Parent racine;
+        try {
+            racine = charger(nomDeVue);
+        } catch (RuntimeException e) {
+            // Un écran qui ne s'ouvre pas laissait jusqu'ici l'utilisateur
+            // devant une fenêtre inchangée, sans le moindre signe : la trace
+            // partait en console et lui n'apprenait rien. C'est le seul cas
+            // où la boîte de dialogue s'impose — il n'y a pas d'écran
+            // d'arrivée où afficher un encart.
+            new GestionnaireErreurs(null, contexte.config().profil())
+                .signalerEnDialogue("ArenaLeague", "ouvrir l'écran demandé", e);
+            return;
+        }
+
         Scene scene = new Scene(racine);
         var style = getClass().getResource(FEUILLE_DE_STYLE);
         if (style != null) {

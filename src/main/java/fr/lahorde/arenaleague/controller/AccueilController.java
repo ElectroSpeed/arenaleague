@@ -3,7 +3,6 @@ package fr.lahorde.arenaleague.controller;
 import fr.lahorde.arenaleague.AppContext;
 import fr.lahorde.arenaleague.model.Tournoi;
 import fr.lahorde.arenaleague.model.Utilisateur;
-import fr.lahorde.arenaleague.model.exception.ArenaLeagueException;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -12,9 +11,11 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -55,6 +56,8 @@ public final class AccueilController {
     private final AppContext contexte;
     private final Vues vues;
 
+    private GestionnaireErreurs erreurs;
+
     public AccueilController(AppContext contexte, Vues vues) {
         this.contexte = contexte;
         this.vues = vues;
@@ -62,7 +65,8 @@ public final class AccueilController {
 
     @FXML
     private void initialize() {
-        masquerErreur();
+        erreurs = new GestionnaireErreurs(messageErreur, contexte.config().profil());
+        erreurs.masquer();
 
         Utilisateur connecte = contexte.session().exigerConnecte();
         nomUtilisateur.setText(connecte.login());
@@ -118,7 +122,32 @@ public final class AccueilController {
             ? "Aucun tournoi pour l'instant.\nUtilisez « Créer un tournoi » pour en ajouter un."
             : "Aucun tournoi pour l'instant."));
 
+        installerRaccourciCreation();
         chargerTournois();
+    }
+
+    /**
+     * Ctrl+N ouvre la création de tournoi **quel que soit le rôle**, alors
+     * que le bouton reste masqué pour un Arbitre.
+     *
+     * Ce n'est pas une faille laissée par distraction : c'est le chemin du
+     * cas de démonstration CE-01, qui demande d'atteindre l'écran « via le
+     * raccourci clavier, l'entrée de menu étant masquée ». Il matérialise
+     * l'argument central du projet — masquer un bouton est du confort, le
+     * refus qui compte est celui du service, et il tombe même quand l'IHM
+     * est contournée.
+     *
+     * L'accélérateur se pose sur la scène, qui n'existe pas encore quand
+     * initialize() s'exécute : d'où l'attente de son affectation.
+     */
+    private void installerRaccourciCreation() {
+        tableTournois.sceneProperty().addListener((observable, avant, scene) -> {
+            if (scene != null) {
+                scene.getAccelerators().put(
+                    new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN),
+                    this::creerTournoi);
+            }
+        });
     }
 
     @FXML
@@ -145,29 +174,12 @@ public final class AccueilController {
     }
 
     private void chargerTournois() {
-        try {
-            List<Tournoi> tournois = contexte.tournois().lister();
-            tableTournois.getItems().setAll(tournois);
-            compteurTournois.setText(tournois.isEmpty()
-                ? "" : tournois.size() + (tournois.size() > 1 ? " tournois" : " tournoi"));
-
-        } catch (ArenaLeagueException e) {
-            afficherErreur(e.getMessage());
-        } catch (RuntimeException e) {
-            afficherErreur("La liste des tournois n'a pas pu être chargée.");
-            System.err.println("Erreur technique au chargement des tournois : " + e);
-        }
-    }
-
-    private void afficherErreur(String message) {
-        messageErreur.setText(message);
-        messageErreur.setVisible(true);
-        messageErreur.setManaged(true);
-    }
-
-    private void masquerErreur() {
-        messageErreur.setVisible(false);
-        messageErreur.setManaged(false);
+        erreurs.calculer("charger la liste des tournois", () -> contexte.tournois().lister())
+            .ifPresent(tournois -> {
+                tableTournois.getItems().setAll(tournois);
+                compteurTournois.setText(tournois.isEmpty()
+                    ? "" : tournois.size() + (tournois.size() > 1 ? " tournois" : " tournoi"));
+            });
     }
 
     private static Label etiquetteVide(String texte) {

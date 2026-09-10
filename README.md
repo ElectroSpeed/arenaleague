@@ -146,11 +146,16 @@ démonstration. Livrés hors dépôt, dans les documents de projet.
 | 2.10 IHM création de tournoi | terminée | `creation-tournoi.fxml`, calendrier |
 | 2.11 IHM saisie des résultats | terminée | `saisie-resultats.fxml`, propagation du tour suivant |
 | 2.12 IHM classement en direct | terminée | Observer, recalcul sans rafraîchissement |
-| 2.13 Gestion des erreurs IHM | à faire | Harmonisation des messages |
+| 2.13 Gestion des erreurs IHM | terminée | `GestionnaireErreurs`, filet de sécurité global |
+
+Le raccourci **Ctrl+N** ouvre la création de tournoi quel que soit le rôle,
+alors que le bouton reste masqué pour un Arbitre. Ce n'est pas un oubli :
+c'est le chemin du cas de démonstration CE-01, qui exige d'atteindre l'écran
+« l'entrée de menu étant masquée ». Le refus vient alors du service.
 
 La chaîne complète a été exécutée sur poste le 10 septembre 2026 :
 `mvn clean install` réussit, les 38 tests passent, et l'application se lance
-et s'utilise en profil H2. Les tâches 2.0 à 2.12 sont donc vérifiées, plus
+et s'utilise en profil H2. Les tâches 2.0 à 2.13 sont donc vérifiées, plus
 seulement écrites.
 
 L'étape la plus démonstrative du scénario est constatée : en élimination

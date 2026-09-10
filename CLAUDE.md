@@ -176,11 +176,21 @@ dépôt.
 **Phase 2 — production**, tâches suivies dans ClickUp
 (dossier *ArenaLeague — Projet*, liste *Phase 2 — Production*) :
 
-- 2.0 à 2.12 : **vérifiées sur poste** le 10 septembre 2026. `mvn clean
-  install` réussit, les 38 tests passent, l'application se lance et s'utilise
-  en profil H2, jusqu'à la génération automatique de la finale et au
-  recalcul du classement à chaque score, sans rafraîchissement.
-- 2.13 : gestion des erreurs dans l'IHM.
+- 2.0 à 2.13 : **vérifiées sur poste** le 10 septembre 2026. `mvn clean
+  install` réussit, les 38 tests passent, et le scénario nominal se joue
+  entièrement en profil H2 — jusqu'à la finale générée seule et au classement
+  recalculé à chaque score, sans rafraîchissement. Les cas d'erreur CE-01,
+  CE-02 et CE-04 sont démontrables.
+- Restent : GATE 2, GATE 3, et les tâches 2.14 (export, hors périmètre) et
+  2.15 (README).
+
+**Toutes les erreurs passent par `GestionnaireErreurs`** : message métier
+affiché tel quel, panne technique traduite en phrase actionnable et tracée
+avec sa pile. Ne pas rajouter de `try/catch` dans un contrôleur — il n'y en a
+plus aucun, et c'est ce qui garantit l'uniformité des messages.
+
+**Ctrl+N** ouvre la création quel que soit le rôle : c'est volontaire, c'est
+le chemin de CE-01.
 
 **Avant chaque répétition de la démonstration**, supprimer `data/` : Flyway
 rejoue le seed. Le tableau de référence du classement n'apparaît que si l'on
