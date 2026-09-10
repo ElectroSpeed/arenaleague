@@ -5,6 +5,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <!--
@@ -13,47 +15,72 @@
   Aucune logique ici : le FXML décrit la structure, le contrôleur décrit le
   comportement. C'est la raison du choix de FXML plutôt que d'un JavaFX
   entièrement programmatique — la frontière vue / contrôleur est physique.
+
+  La marque est composée de deux Labels et d'un filet dégradé plutôt que
+  d'une image : rien à charger, rien à versionner, et le rendu suit la
+  résolution de l'écran.
 -->
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="fr.lahorde.arenaleague.controller.LoginController"
-      styleClass="ecran-connexion"
+      styleClass="contenu-page"
       alignment="CENTER"
-      spacing="16"
-      prefWidth="420"
-      prefHeight="480">
+      spacing="0"
+      prefWidth="560"
+      prefHeight="620">
 
-    <padding>
-        <Insets top="48" right="48" bottom="48" left="48"/>
-    </padding>
+    <VBox styleClass="carte" alignment="CENTER_LEFT" spacing="6" maxWidth="392">
 
-    <Label text="ArenaLeague" styleClass="titre-application"/>
-    <Label text="Gestion de tournois eSport" styleClass="sous-titre"/>
+        <HBox spacing="0" alignment="CENTER_LEFT">
+            <Label text="ARENA" styleClass="titre-application"/>
+            <Label text="LEAGUE" styleClass="titre-application, marque-accent"/>
+        </HBox>
 
-    <VBox spacing="8" maxWidth="280">
-        <padding><Insets top="24"/></padding>
-        <Label text="Identifiant" styleClass="etiquette-champ"/>
-        <TextField fx:id="champLogin" promptText="orga ou arbitre"/>
+        <Region styleClass="filet-accent" prefHeight="3" maxWidth="72" minHeight="3"/>
+
+        <Label text="Gestion de tournois eSport" styleClass="sous-titre">
+            <padding><Insets top="6" bottom="18"/></padding>
+        </Label>
+
+        <VBox spacing="6" maxWidth="Infinity">
+            <Label text="IDENTIFIANT" styleClass="etiquette-champ"/>
+            <TextField fx:id="champLogin" promptText="orga ou arbitre"/>
+        </VBox>
+
+        <VBox spacing="6" maxWidth="Infinity">
+            <padding><Insets top="12"/></padding>
+            <Label text="MOT DE PASSE" styleClass="etiquette-champ"/>
+            <PasswordField fx:id="champMotDePasse" promptText="Mot de passe"/>
+        </VBox>
+
+        <Label fx:id="messageErreur"
+               styleClass="message-erreur"
+               wrapText="true"
+               maxWidth="Infinity"
+               visible="false"
+               managed="false">
+            <VBox.margin><Insets top="14"/></VBox.margin>
+        </Label>
+
+        <Button fx:id="boutonConnexion"
+                text="Se connecter"
+                onAction="#seConnecter"
+                defaultButton="true"
+                styleClass="bouton-principal"
+                maxWidth="Infinity"
+                prefHeight="42">
+            <VBox.margin><Insets top="20"/></VBox.margin>
+        </Button>
+
+        <!-- Comptes de démonstration rappelés à l'écran : le jury ne devrait
+             pas avoir à chercher dans le README pendant la soutenance. À
+             retirer si l'application sortait du cadre de la démonstration. -->
+        <Label text="Démonstration — orga / orga (Organisateur) · arbitre / arbitre (Arbitre)"
+               styleClass="aide-champ"
+               wrapText="true"
+               maxWidth="Infinity">
+            <VBox.margin><Insets top="16"/></VBox.margin>
+        </Label>
     </VBox>
-
-    <VBox spacing="8" maxWidth="280">
-        <Label text="Mot de passe" styleClass="etiquette-champ"/>
-        <PasswordField fx:id="champMotDePasse"/>
-    </VBox>
-
-    <Label fx:id="messageErreur"
-           styleClass="message-erreur"
-           wrapText="true"
-           maxWidth="280"
-           visible="false"
-           managed="false"/>
-
-    <Button fx:id="boutonConnexion"
-            text="Se connecter"
-            onAction="#seConnecter"
-            defaultButton="true"
-            styleClass="bouton-principal"
-            maxWidth="280"
-            prefHeight="40"/>
 
 </VBox>

@@ -176,16 +176,35 @@ dépôt.
 **Phase 2 — production**, tâches suivies dans ClickUp
 (dossier *ArenaLeague — Projet*, liste *Phase 2 — Production*) :
 
-- 2.0 à 2.8 : code écrit. `mvn clean install` et `mvn test` restent à valider
-  sur poste — ils n'ont jamais pu être exécutés jusqu'ici.
-- 2.9 : écran de connexion écrit mais **jamais compilé** (JavaFX indisponible
-  dans l'environnement précédent). À vérifier en priorité avec `mvn javafx:run`.
-- 2.10 à 2.13 : IHM restante — création de tournoi, saisie des résultats,
-  classement en direct, gestion des erreurs.
+- 2.0 à 2.10 : **vérifiées sur poste** le 10 septembre 2026. `mvn clean
+  install` réussit, les 38 tests passent, l'application se lance et s'utilise
+  en profil H2.
+- 2.11 à 2.13 : IHM restante — saisie des résultats, classement en direct,
+  gestion des erreurs.
 
-**Prochaine action recommandée** : compiler et lancer avant d'écrire de
-nouveaux écrans. Une erreur de câblage FXML répliquée sur quatre écrans coûte
-bien plus cher qu'une seule corrigée tôt.
+**Environnement** : ni Maven ni JDK ne sont installés séparément sur le poste.
+Les deux viennent d'IntelliJ IDEA Community (Maven 3.9.9, JBR 21) :
+
+```
+$IDEA = "C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2025.2.6.2"
+$env:JAVA_HOME = "$IDEA\jbr"
+$env:PATH = "$IDEA\plugins\maven\lib\maven3\bin;$env:JAVA_HOME\bin;$env:PATH"
+```
+
+**Avant chaque lancement**, valider les vues — une erreur FXML ne se voit ni à
+la compilation ni au démarrage, seulement au clic qui ouvre l'écran :
+
+```bash
+python -c "import glob,xml.etree.ElementTree as ET; [ET.parse(f) for f in glob.glob('src/main/resources/fxml/*.fxml')]"
+```
+
+Attention : XML interdit `--` dans un commentaire, ce qui est pourtant un
+séparateur naturel en Java. C'est ce qui a rendu `creation-tournoi.fxml`
+illisible une première fois.
+
+**Une seule instance à la fois** : H2 en mode fichier est à connexion
+exclusive. Une seconde application affiche « la base est peut-être en cours
+d'utilisation ». Supprimer `data/` remet le jeu de données de référence.
 
 ---
 

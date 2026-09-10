@@ -99,6 +99,28 @@ Les mots de passe sont stockés en BCrypt, jamais en clair.
 
 ---
 
+## Direction artistique
+
+Palette rouge / noir / blanc, inspirée de l'identité de l'organisation esport
+T1 — hommage graphique, sans logo ni nom repris. Le rouge `#E2012D`
+correspond au Pantone 185 C, seule spécification que T1 publie.
+
+Deux partis pris techniques, dans `css/app.css` :
+
+- le thème sombre redéfinit les **couleurs sémantiques de Modena**
+  (`-fx-base`, `-fx-control-inner-background`, `-fx-accent`…) au lieu de
+  repeindre chaque contrôle. Modena dérive ensuite lui-même le texte et les
+  états ; popups, calendrier du `DatePicker`, ascenseurs et boîtes de
+  dialogue suivent sans code supplémentaire ;
+- **aucune police n'est embarquée.** Les titres utilisent une condensée
+  livrée avec le système quand elle existe, avec repli sur la famille de
+  texte. Un `.ttf` au dépôt serait un binaire de plus pour un gain marginal.
+
+Les contrastes sont calculés et annotés dans la feuille : seuil 4.5:1 (WCAG
+AA) pour le texte. Le blanc sur `#E2012D` donne 4.91:1.
+
+---
+
 ## État d'avancement
 
 ### Phase 1 — Conception · terminée

@@ -1,126 +1,527 @@
 /* =====================================================================
    ArenaLeague — feuille de style
-   Palette alignée sur les documents de conception.
+
+   Direction artistique inspirée de l'identité T1 : rouge, noir, blanc.
+   Le rouge #E2012D correspond au Pantone 185 C, seule spécification que
+   T1 publie ; l'organisation ne diffuse pas de hex officiels. Il s'agit
+   d'un hommage graphique — ni logo, ni nom, ni marque reprise.
+
+   Aucune charte n'existant dans les documents de conception, cette
+   palette fait référence pour le projet.
+
+   Trois principes tiennent le fichier :
+
+   1. On redéfinit les couleurs SÉMANTIQUES de Modena plutôt que de
+      repeindre chaque contrôle. Modena dérive ensuite lui-même le texte,
+      les bordures et les états ; popups, calendrier, ascenseurs et
+      boîtes de dialogue suivent.
+
+   2. TOUT état interactif est défini : repos, survol, pressé, focus,
+      désactivé, sélectionné. Un contrôle qui ne réagit pas à la souris
+      donne l'impression d'une application figée, et un focus invisible
+      rend le clavier inutilisable.
+
+   3. Les contrastes sont calculés, pas supposés. Seuil retenu :
+      4.5:1 (WCAG AA) pour le texte, 3:1 pour les bordures et repères
+      non textuels.
    ===================================================================== */
 
 .root {
-    -fx-font-family: "Segoe UI", "Carlito", "Calibri", sans-serif;
-    -fx-font-size: 13px;
-    -fx-background-color: #FFFFFF;
+    /* ---------- Palette T1 ---------- */
+    rouge:           #E2012D;   /* Pantone 185 C — blanc dessus : 4.91:1 */
+    rouge-vif:       #FF1F45;   /* survol */
+    rouge-sombre:    #A80020;   /* pressé */
+    rouge-texte:     #FF6B85;   /* rouge lisible sur fond sombre : 6.8:1 */
 
-    accent:        #E63E52;
-    accent-fonce:  #A81F32;
-    encre:         #1F2328;
-    gris-texte:    #6E7781;
-    gris-bordure:  #DDE1E6;
-    gris-fond:     #F7F8FA;
+    noir:            #000000;   /* barre de marque — le noir T1, non dilué */
+    fond:            #0B0B0D;
+    surface:         #141417;
+    surface-haute:   #1E1E23;
+    surface-champ:   #101013;
+    bordure:         #2A2A31;
+    bordure-vive:    #3A3A44;
+
+    blanc:           #FFFFFF;
+    texte:           #FFFFFF;   /* 18.5:1 sur surface */
+    texte-doux:      #A8A9B4;   /*  7.9:1 sur surface */
+    texte-eteint:    #8A8B95;   /*  5.5:1 sur surface */
+
+    succes:          #4ADE80;
+    succes-fond:     #0C1F14;
+    succes-bord:     #1F5A36;
+    alerte:          #FBBF24;
+    alerte-fond:     #201907;
+    alerte-bord:     #6B531A;
+    danger-fond:     #230309;
+    danger-bord:     #7A0A20;
+
+    /* ---------- Couleurs sémantiques Modena ----------
+       C'est ce bloc qui bascule tous les contrôles standard en sombre. */
+    -fx-base:                         surface;
+    -fx-background:                   fond;
+    -fx-control-inner-background:     surface-champ;
+    -fx-control-inner-background-alt: surface;
+    -fx-accent:                       rouge;
+    -fx-default-button:               rouge;
+    -fx-focus-color:                  rouge;
+    -fx-faint-focus-color:            #E2012D33;
+    -fx-selection-bar:                rouge;
+    -fx-selection-bar-non-focused:    surface-haute;
+    -fx-text-background-color:        texte;
+    -fx-mark-color:                   texte;
+    -fx-mark-highlight-color:         transparent;
+    -fx-highlight-fill:               rouge;
+    -fx-highlight-text-fill:          blanc;
+
+    -fx-font-family: "Segoe UI", "Inter", "Carlito", "Calibri", sans-serif;
+    -fx-font-size: 13.5px;
+    -fx-background-color: fond;
 }
 
-/* ---------- Typographie ---------- */
+/* =====================================================================
+   Typographie
+
+   Titres en condensée technique quand la machine en a une (Bahnschrift
+   est livrée avec Windows 10+), repli propre ailleurs. Rien n'est
+   téléchargé : une police embarquée serait un binaire de plus au dépôt.
+   ===================================================================== */
 .titre-application {
-    -fx-font-size: 34px;
-    -fx-font-weight: bold;
-    -fx-text-fill: encre;
+    -fx-font-family: "Bahnschrift SemiBold Condensed", "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
+    -fx-font-size: 42px;
+    -fx-text-fill: texte;
 }
-.sous-titre {
-    -fx-font-size: 14px;
-    -fx-text-fill: gris-texte;
-}
-.etiquette-champ {
-    -fx-font-size: 11px;
+.marque {
+    -fx-font-family: "Bahnschrift SemiBold Condensed", "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
-    -fx-text-fill: gris-texte;
+    -fx-text-fill: blanc;
 }
-.titre-section {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-    -fx-text-fill: encre;
+.marque-accent { -fx-text-fill: rouge; }
+
+/* Filet plein rouge : l'identité T1 ne joue pas sur les dégradés. */
+.filet-accent {
+    -fx-background-color: rouge;
+    -fx-background-radius: 0;
 }
 
-/* ---------- Champs ---------- */
-.text-field, .password-field, .combo-box, .date-picker {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: gris-bordure;
+.titre-section {
+    -fx-font-family: "Bahnschrift SemiBold Condensed", "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
+    -fx-font-size: 22px;
+    -fx-text-fill: texte;
+}
+.sous-titre    { -fx-font-size: 14px; -fx-text-fill: texte-doux; }
+.etiquette-champ {
+    -fx-font-size: 10.5px;
+    -fx-font-weight: bold;
+    -fx-text-fill: texte-doux;
+}
+.aide-champ    { -fx-font-size: 11.5px; -fx-text-fill: texte-eteint; -fx-line-spacing: 3; }
+.zone-vide     { -fx-text-fill: texte-doux; -fx-font-size: 13px; -fx-text-alignment: center; }
+.label         { -fx-text-fill: texte; -fx-line-spacing: 2; }
+
+/* =====================================================================
+   Chrome
+   ===================================================================== */
+.barre-superieure {
+    -fx-background-color: noir;
+    -fx-border-color: transparent transparent rouge transparent;
+    -fx-border-width: 0 0 2 0;          /* le filet rouge signe la barre */
+    -fx-padding: 14 22 14 22;
+}
+.barre-superieure .label { -fx-text-fill: blanc; }
+.barre-superieure .separateur-fil { -fx-text-fill: texte-eteint; }
+
+.badge-role {
+    -fx-background-color: rouge;
+    -fx-text-fill: blanc;               /* 4.91:1 */
+    -fx-font-size: 10.5px;
+    -fx-font-weight: bold;
+    -fx-padding: 3 9 3 9;
+    -fx-background-radius: 3;
+}
+
+/* =====================================================================
+   Surfaces
+   ===================================================================== */
+.contenu-page { -fx-background-color: fond; }
+.panneau {
+    -fx-background-color: surface;
+    -fx-border-color: transparent bordure transparent transparent;
+    -fx-border-width: 0 1 0 0;
+}
+.carte {
+    -fx-background-color: surface;
+    -fx-border-color: bordure;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
-    -fx-padding: 8 10 8 10;
-}
-.text-field:focused, .password-field:focused {
-    -fx-border-color: accent;
+    -fx-padding: 30;
 }
 
-/* ---------- Boutons ---------- */
+/* =====================================================================
+   Champs de saisie — repos / focus / désactivé
+   ===================================================================== */
+.text-field, .password-field, .combo-box, .date-picker, .list-view, .table-view {
+    -fx-background-color: surface-champ;
+    -fx-border-color: bordure;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+}
+.text-field, .password-field {
+    -fx-padding: 10 12 10 12;
+    -fx-text-fill: texte;
+    -fx-prompt-text-fill: texte-eteint;
+}
+.text-field:hover, .password-field:hover,
+.combo-box:hover, .date-picker:hover { -fx-border-color: bordure-vive; }
+
+.text-field:focused, .password-field:focused,
+.combo-box:focused, .date-picker:focused, .list-view:focused {
+    -fx-border-color: rouge;
+    -fx-border-width: 1.5;
+}
+.text-field:disabled, .password-field:disabled,
+.combo-box:disabled, .date-picker:disabled, .list-view:disabled {
+    -fx-opacity: 0.45;
+}
+
+/* ComboBox : bouton flèche, cellule affichée, popup */
+.combo-box .arrow-button { -fx-background-color: transparent; }
+.combo-box .arrow { -fx-background-color: texte-doux; }
+.combo-box:hover .arrow { -fx-background-color: rouge; }
+.combo-box .list-cell { -fx-text-fill: texte; -fx-padding: 7 10 7 10; -fx-background-color: transparent; }
+.combo-box-popup .list-view {
+    -fx-background-color: surface-haute;
+    -fx-border-color: bordure-vive;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 14, 0, 0, 4);
+}
+.combo-box-popup .list-view .list-cell:filled:hover,
+.combo-box-popup .list-view .list-cell:filled:selected {
+    -fx-background-color: rouge;
+    -fx-text-fill: blanc;
+}
+
+/* DatePicker : bouton, popup, jours */
+.date-picker .arrow-button { -fx-background-color: transparent; }
+.date-picker .arrow-button .arrow { -fx-background-color: texte-doux; }
+.date-picker:hover .arrow-button .arrow { -fx-background-color: rouge; }
+.date-picker-popup {
+    -fx-background-color: surface-haute;
+    -fx-border-color: bordure-vive;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 16, 0, 0, 4);
+}
+.date-picker-popup > .month-year-pane { -fx-background-color: noir; }
+.date-picker-popup > * > .label { -fx-text-fill: texte; }
+.date-picker-popup > * > .day-name-cell { -fx-text-fill: texte-doux; }
+.date-picker-popup > * > .day-cell {
+    -fx-background-color: surface-haute;
+    -fx-text-fill: texte;
+    -fx-border-color: transparent;
+}
+.date-picker-popup > * > .day-cell:hover { -fx-background-color: bordure-vive; }
+.date-picker-popup > * > .selected { -fx-background-color: rouge; -fx-text-fill: blanc; }
+.date-picker-popup > * > .today {
+    -fx-border-color: rouge;
+    -fx-border-width: 1;
+}
+.date-picker-popup > * > .next-month,
+.date-picker-popup > * > .previous-month { -fx-text-fill: texte-eteint; }
+
+/* =====================================================================
+   Cases à cocher
+
+   C'est l'interaction principale de l'écran de création : elle ne pouvait
+   pas rester au thème par défaut. Quatre états couverts, plus le focus
+   clavier, qui est le seul repère de qui n'utilise pas la souris.
+   ===================================================================== */
+.check-box { -fx-text-fill: texte; -fx-cursor: hand; }
+.check-box .box {
+    -fx-background-color: surface-champ;
+    -fx-border-color: bordure-vive;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-padding: 3;
+}
+.check-box:hover .box            { -fx-border-color: rouge; }
+.check-box:selected .box         { -fx-background-color: rouge; -fx-border-color: rouge; }
+.check-box:selected .mark        { -fx-background-color: blanc; }
+.check-box:selected:hover .box   { -fx-background-color: rouge-vif; -fx-border-color: rouge-vif; }
+.check-box:armed .box            { -fx-background-color: rouge-sombre; }
+.check-box:focused .box          { -fx-border-color: rouge; -fx-border-width: 2; }
+.check-box:disabled              { -fx-opacity: 0.45; -fx-cursor: default; }
+
+/* =====================================================================
+   Boutons — repos / survol / pressé / focus / désactivé
+   ===================================================================== */
 .bouton-principal {
-    -fx-background-color: accent;
-    -fx-text-fill: white;
+    -fx-background-color: rouge;
+    -fx-text-fill: blanc;               /* 4.91:1 */
     -fx-font-weight: bold;
-    -fx-background-radius: 4;
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+    -fx-border-color: transparent;
+    -fx-padding: 10 20 10 20;
     -fx-cursor: hand;
 }
-.bouton-principal:hover  { -fx-background-color: accent-fonce; }
-.bouton-principal:disabled { -fx-opacity: 0.5; }
+.bouton-principal:hover    { -fx-background-color: rouge-vif; }
+.bouton-principal:pressed  { -fx-background-color: rouge-sombre; }
+.bouton-principal:focused  { -fx-border-color: blanc; -fx-border-width: 1.5; }
+.bouton-principal:disabled { -fx-opacity: 0.4; -fx-cursor: default; }
 
 .bouton-secondaire {
     -fx-background-color: transparent;
-    -fx-text-fill: encre;
-    -fx-border-color: gris-bordure;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
+    -fx-text-fill: texte;
+    -fx-border-color: bordure-vive;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-padding: 10 18 10 18;
     -fx-cursor: hand;
 }
-.bouton-secondaire:hover { -fx-background-color: gris-fond; }
+.bouton-secondaire:hover    { -fx-background-color: surface-haute; -fx-border-color: rouge; }
+.bouton-secondaire:pressed  { -fx-background-color: noir; }
+.bouton-secondaire:focused  { -fx-border-color: rouge; -fx-border-width: 1.5; }
+.bouton-secondaire:disabled { -fx-opacity: 0.4; -fx-cursor: default; }
 
-/* ---------- Messages ---------- */
-/* Le message d'erreur doit se voir sans faire peur : encadré discret,
-   pas une boîte de dialogue modale qui coupe la démonstration. */
+/* =====================================================================
+   Retour à l'utilisateur
+
+   Chaque état a fond, bordure et texte propres. La couleur ne porte
+   jamais l'information seule : le texte dit toujours quoi faire.
+   ===================================================================== */
 .message-erreur {
-    -fx-background-color: #FDECEF;
-    -fx-border-color: #E8899A;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-text-fill: accent-fonce;
-    -fx-padding: 10;
+    -fx-line-spacing: 3;
+    -fx-background-color: danger-fond;
+    -fx-border-color: danger-bord;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-text-fill: rouge-texte;         /* 6.8:1 */
+    -fx-padding: 12 14 12 14;
     -fx-font-size: 12px;
 }
 .message-info {
-    -fx-background-color: gris-fond;
-    -fx-border-color: gris-bordure;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-text-fill: encre;
-    -fx-padding: 10;
+    -fx-line-spacing: 3;
+    -fx-background-color: surface-haute;
+    -fx-border-color: bordure;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-text-fill: texte-doux;
+    -fx-padding: 12 14 12 14;
+}
+.message-succes {
+    -fx-line-spacing: 3;
+    -fx-background-color: succes-fond;
+    -fx-border-color: succes-bord;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-text-fill: succes;
+    -fx-padding: 12 14 12 14;
+    -fx-font-size: 12px;
 }
 
-/* ---------- Barre supérieure ---------- */
-.barre-superieure {
-    -fx-background-color: #2B3038;
-    -fx-padding: 12 20 12 20;
+.compteur {
+    -fx-line-spacing: 3;
+    -fx-font-size: 12px;
+    -fx-padding: 11 13 11 13;
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
 }
-.barre-superieure .label { -fx-text-fill: white; }
-.badge-role {
-    -fx-background-color: accent;
-    -fx-text-fill: white;
+.compteur-ok { -fx-background-color: succes-fond; -fx-border-color: succes-bord; -fx-text-fill: succes; }
+.compteur-ko { -fx-background-color: alerte-fond; -fx-border-color: alerte-bord; -fx-text-fill: alerte; }
+
+.numero-etape {
+    -fx-background-color: rouge;
+    -fx-text-fill: blanc;
     -fx-font-size: 11px;
     -fx-font-weight: bold;
-    -fx-padding: 3 8 3 8;
-    -fx-background-radius: 10;
+    -fx-min-width: 22;
+    -fx-min-height: 22;
+    -fx-alignment: center;
+    -fx-background-radius: 3;
 }
 
-/* ---------- Tableaux ---------- */
-.table-view {
-    -fx-border-color: gris-bordure;
-    -fx-border-radius: 4;
+/* =====================================================================
+   Listes
+   ===================================================================== */
+.list-view { -fx-padding: 4; }
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: texte;
+    -fx-padding: 9 10 9 10;
+    -fx-background-radius: 3;
+}
+.list-cell:filled:hover    { -fx-background-color: surface-haute; }
+.list-cell:filled:selected { -fx-background-color: transparent; }
+.list-view .placeholder .label { -fx-text-fill: texte-doux; }
+
+.equipe-inscriptible .cellule-effectif { -fx-text-fill: texte-doux; }
+.equipe-refusee { -fx-opacity: 0.5; }
+.equipe-refusee .cellule-effectif {
+    -fx-text-fill: rouge-texte;
+    -fx-font-weight: bold;
+}
+
+/* =====================================================================
+   Tableaux
+   ===================================================================== */
+.table-view { -fx-padding: 0; }
+
+/* L'en-tête, le remplissage à droite des colonnes et le coin haut-droit
+   sont trois nœuds distincts. Oublier les deux derniers laisse des blocs
+   au thème par défaut, très visibles sur fond sombre. */
+.table-view .column-header-background { -fx-background-color: noir; }
+.table-view .column-header-background > .filler { -fx-background-color: noir; }
+.table-view .corner {
+    -fx-background-color: noir;
+    -fx-border-color: transparent transparent rouge transparent;
+    -fx-border-width: 0 0 2 0;
 }
 .table-view .column-header {
-    -fx-background-color: #2B3038;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent rouge transparent;
+    -fx-border-width: 0 0 2 0;
+    /* Même padding horizontal que les cellules : sans ça, l'intitulé et la
+       valeur ne sont pas sur la même verticale. */
+    -fx-padding: 12 14 12 14;
+    -fx-size: 42;
 }
 .table-view .column-header .label {
-    -fx-text-fill: white;
+    -fx-text-fill: blanc;
+    -fx-font-size: 10.5px;
     -fx-font-weight: bold;
     -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0;
 }
-.table-row-cell:odd { -fx-background-color: gris-fond; }
-.table-row-cell:selected { -fx-background-color: #FDECEF; -fx-text-fill: encre; }
+.table-view .table-cell {
+    -fx-text-fill: texte;
+    -fx-border-color: transparent;
+    -fx-padding: 13 14 13 14;
+    -fx-alignment: CENTER_LEFT;
+}
+/* Hiérarchie : le nom porte le poids, les données de contexte s'effacent. */
+.cellule-principale {
+    -fx-font-weight: bold;
+    -fx-font-size: 13.5px;
+    -fx-text-fill: blanc;
+}
+.cellule-secondaire { -fx-text-fill: texte-doux; }
+
+.table-row-cell {
+    -fx-background-color: surface;
+    -fx-border-color: transparent transparent #202027 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-cell-size: 46;
+}
+.table-row-cell:odd { -fx-background-color: #171719; }
+
+/* Les lignes vides ne doivent porter ni fond ni filet : rayées comme des
+   lignes pleines, elles se lisent comme des données absentes. */
+.table-row-cell:empty {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.table-row-cell:empty .table-cell { -fx-border-color: transparent; }
+
+.table-row-cell:hover { -fx-background-color: surface-haute; }
+/* Sélection : un filet rouge à gauche plutôt qu'un aplat sourd. La ligne
+   reste lisible, et le repère se voit même en périphérie de l'œil. */
+.table-row-cell:selected {
+    -fx-background-color: #241016;
+    -fx-border-color: transparent transparent #202027 rouge;
+    -fx-border-width: 0 0 1 3;
+}
+.table-row-cell:selected .table-cell { -fx-text-fill: blanc; }
+.table-view .placeholder .label { -fx-text-fill: texte-doux; }
+/* Focus discret : le filet rouge des en-têtes suffit à signer le tableau,
+   un second cadre rouge sur toute la hauteur devenait du bruit. */
+.table-view:focused { -fx-border-color: bordure-vive; }
+
+/* Pastilles d'état — le libellé reste écrit, la couleur ne fait que
+   renforcer ce que le texte dit déjà. */
+.badge-etat {
+    -fx-font-size: 10.5px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 10 4 10;
+    -fx-background-radius: 3;
+}
+.badge-en-cours {
+    -fx-background-color: rouge;
+    -fx-text-fill: blanc;               /* 4.91:1 */
+}
+.badge-ouvert {
+    -fx-background-color: transparent;
+    -fx-border-color: bordure-vive;
+    -fx-border-radius: 3;
+    -fx-text-fill: texte-doux;
+}
 
 /* Ligne d'une équipe qualifiée — RG-46 */
 .ligne-qualifiee { -fx-font-weight: bold; }
+
+/* =====================================================================
+   Infobulles
+
+   Utilisées pour expliquer pourquoi une équipe est refusée : elles
+   portent de l'information, elles doivent donc être lisibles.
+   ===================================================================== */
+.tooltip {
+    -fx-background-color: noir;
+    -fx-text-fill: blanc;
+    -fx-border-color: rouge;
+    -fx-border-width: 0 0 0 3;
+    -fx-padding: 9 12 9 12;
+    -fx-font-size: 12px;
+    -fx-background-radius: 3;
+}
+
+/* =====================================================================
+   Boîtes de dialogue
+
+   Une Alert vit dans sa propre fenêtre et n'hérite pas de la feuille de
+   style de la scène : le contrôleur la lui ajoute explicitement.
+   ===================================================================== */
+.dialog-pane {
+    -fx-background-color: surface;
+    -fx-border-color: bordure-vive;
+    -fx-border-width: 1;
+}
+.dialog-pane > .header-panel {
+    -fx-background-color: noir;
+    -fx-border-color: transparent transparent rouge transparent;
+    -fx-border-width: 0 0 2 0;
+}
+.dialog-pane > .header-panel .label {
+    -fx-text-fill: blanc;
+    -fx-font-family: "Bahnschrift SemiBold Condensed", "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
+    -fx-font-size: 18px;
+}
+.dialog-pane > .content.label { -fx-text-fill: texte-doux; }
+.dialog-pane .button {
+    -fx-background-color: transparent;
+    -fx-text-fill: texte;
+    -fx-border-color: bordure-vive;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-padding: 9 16 9 16;
+    -fx-cursor: hand;
+}
+.dialog-pane .button:hover { -fx-background-color: surface-haute; -fx-border-color: rouge; }
+/* Le bouton par défaut porte l'action : il doit se distinguer du refus. */
+.dialog-pane .button:default {
+    -fx-background-color: rouge;
+    -fx-text-fill: blanc;
+    -fx-border-color: transparent;
+    -fx-font-weight: bold;
+}
+.dialog-pane .button:default:hover   { -fx-background-color: rouge-vif; }
+.dialog-pane .button:default:pressed { -fx-background-color: rouge-sombre; }
+
+/* =====================================================================
+   Ascenseurs
+   ===================================================================== */
+.scroll-bar { -fx-background-color: transparent; }
+.scroll-bar .track { -fx-background-color: transparent; }
+.scroll-bar .thumb { -fx-background-color: bordure-vive; -fx-background-radius: 3; }
+.scroll-bar .thumb:hover   { -fx-background-color: rouge; }
+.scroll-bar .thumb:pressed { -fx-background-color: rouge-sombre; }
+.scroll-bar .increment-button, .scroll-bar .decrement-button { -fx-opacity: 0; -fx-padding: 3; }
+.scroll-pane { -fx-background-color: transparent; }
+.scroll-pane > .viewport { -fx-background-color: transparent; }
