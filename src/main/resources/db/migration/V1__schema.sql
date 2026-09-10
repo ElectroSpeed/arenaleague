@@ -1,6 +1,6 @@
 -- =====================================================================
 --  ArenaLeague — schéma initial
---  Migration Flyway V1 · PostgreSQL 16
+--  Migration Flyway V1 · PostgreSQL 18
 --  Tâche 1.5 · Phase 1 — cohérent avec le diagramme de classes (1.4)
 --
 --  Chaque contrainte porte en commentaire la règle de gestion (RG-xx)

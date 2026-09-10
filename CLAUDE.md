@@ -148,9 +148,12 @@ départage. **Si ce tableau change, quelque chose est cassé.**
 
 ## Base de données
 
-PostgreSQL 16 installé localement, ou H2 embarqué en repli (`app.profile=h2`
-dans `application.properties`). Le **même** SQL de migration s'applique aux
-deux.
+PostgreSQL 18 installé localement (`postgresql-x64-18`, service automatique),
+ou H2 embarqué en repli (`app.profile=h2` dans `application.properties`). Le
+**même** SQL de migration s'applique aux deux.
+
+`psql` n'est pas dans le `PATH` : l'appeler par son chemin complet,
+`C:\Program Files\PostgreSQL\18\bin\psql.exe`.
 
 ```bash
 psql -U postgres -f scripts/creer-base.sql          # une seule fois

@@ -5,7 +5,7 @@ Application de gestion de tournois eSport amateurs — projet M1, La Horde.
 Un organisateur crée un tournoi, un arbitre en saisit les résultats, le
 classement se recalcule automatiquement à chaque score enregistré.
 
-**Java 21 · JavaFX 21 · PostgreSQL 16 · JDBC + Flyway · Maven**
+**Java 21 · JavaFX 21 · PostgreSQL 18 · JDBC + Flyway · Maven**
 
 ---
 
@@ -36,7 +36,7 @@ données de démonstration (`V2`). Supprimer le dossier `data/` remet tout
 
 **Option B — PostgreSQL installé localement** *(mode par défaut)*
 
-Installer PostgreSQL 16 depuis postgresql.org/download, puis :
+Installer PostgreSQL 18 depuis postgresql.org/download, puis :
 
 ```bash
 psql -U postgres -f scripts/creer-base.sql
