@@ -5,6 +5,8 @@ Application de gestion de tournois eSport amateurs — projet M1, La Horde.
 Un organisateur crée un tournoi, un arbitre en saisit les résultats, le
 classement se recalcule automatiquement à chaque score enregistré.
 
+**Java 21 · JavaFX 21 · PostgreSQL 16 · JDBC + Flyway · Maven**
+
 ---
 
 ## Démarrage
@@ -97,6 +99,35 @@ Les mots de passe sont stockés en BCrypt, jamais en clair.
 
 ---
 
+## État d'avancement
+
+### Phase 1 — Conception · terminée
+
+Les cinq diagrammes UML, les règles de gestion (44 règles `RG-01` à `RG-83`),
+le périmètre fonctionnel, le dossier d'architecture et le script de
+démonstration. Livrés hors dépôt, dans les documents de projet.
+
+### Phase 2 — Production
+
+| Tâche | État | Contenu |
+|-------|------|---------|
+| 2.0 Setup | à valider | Maven, arborescence en couches, Flyway |
+| 2.1 Schéma et jeu de données | à valider | `V1__schema.sql`, `V2__seed.sql` |
+| 2.2 Couche model | terminée | 21 classes, entités et interfaces de patterns |
+| 2.3 Couche repository | terminée | 4 DAO JDBC, transactions |
+| 2.4 Authentification et rôles | terminée | BCrypt, contrôle de droits |
+| 2.5 Tournoi et Strategy de format | terminée | Élimination directe, poule |
+| 2.6 Match et machine à états | terminée | Saisie de score, RG-63 |
+| 2.7 Classement | terminée | Cache invalidé par l'Observer |
+| 2.8 Tests unitaires | à valider | 38 tests, 5 classes |
+| 2.9 IHM connexion | à valider | `login.fxml`, `accueil.fxml` |
+| 2.10 à 2.13 IHM | à faire | Création, saisie, classement en direct |
+
+*« à valider » signifie que le code est écrit mais qu'une vérification sur
+poste reste nécessaire : `mvn clean install`, `mvn test`, `mvn javafx:run`.*
+
+---
+
 ## Architecture
 
 Quatre couches, avec une règle de dépendance stricte : chaque couche ne
@@ -135,6 +166,15 @@ Les sous-paquets `service/format` et `model/etat` rendent les deux
 premiers patterns visibles dans l'arborescence, avant même d'ouvrir un
 fichier.
 
+Dans **tout le code métier**, il n'existe qu'un seul `switch` sur le format —
+dans `FabriqueFormat`. Ajouter un troisième format demanderait une valeur
+d'enum, une classe, une ligne dans la fabrique. Aucune modification de
+`TournoiService`, `MatchService` ou `ClassementService`.
+
+De même, `MatchService` ne teste jamais l'état d'un match : il appelle
+`match.demarrer()` ou `match.saisirScore()`, et c'est l'état courant qui
+accepte ou refuse.
+
 ---
 
 ## Traçabilité
@@ -148,6 +188,10 @@ document *Règles de gestion*. Cet identifiant se retrouve :
 
 Répondre à « où est implémentée cette règle ? » se fait par une recherche.
 
+Les cinq cas d'erreur du script de démonstration (`CE-01` à `CE-05`) ont
+chacun leur test dans `CasErreurDemonstrationTest`, **nommé par son
+identifiant**.
+
 ---
 
 ## Tests
@@ -156,9 +200,17 @@ Répondre à « où est implémentée cette règle ? » se fait par une recherch
 mvn test
 ```
 
-Les tests portent sur la couche service — c'est là que vit la logique.
-Les repositories sont remplacés par des implémentations en mémoire, donc
-aucune base n'est nécessaire.
+38 tests répartis en 5 classes, tous sur la couche service — c'est là que vit
+la logique. Les repositories sont remplacés par des implémentations en
+mémoire, donc aucune base n'est nécessaire.
+
+| Classe | Couvre |
+|--------|--------|
+| `AuthServiceTest` | droits, effacement du mot de passe, message indifférencié |
+| `TournoiServiceTest` | inscriptions et démarrage, RG-11 et RG-20 à RG-23 |
+| `MatchServiceTest` | cycle nominal, transitions interdites, Observer, propagation |
+| `ClassementPouleTest` | un test par critère de départage RG-71 à RG-75, déterminisme |
+| `CasErreurDemonstrationTest` | les cinq cas d'erreur de la démonstration |
 
 Le tableau de référence du calcul de classement est celui du §8.1 des
 règles de gestion : deux équipes y sont à égalité parfaite sur les points,
