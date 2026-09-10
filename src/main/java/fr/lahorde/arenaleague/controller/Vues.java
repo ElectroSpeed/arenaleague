@@ -34,6 +34,35 @@ public final class Vues {
         this.fenetre = fenetre;
     }
 
+    /**
+     * Donnée transmise d'un écran à l'autre — en pratique, l'identifiant du
+     * tournoi choisi dans la liste.
+     *
+     * La fabrique de contrôleurs n'injecte que le contexte et la navigation :
+     * elle ne sait pas construire un contrôleur qui exigerait un tournoi en
+     * paramètre. Plutôt que d'ouvrir la fabrique à des arguments arbitraires,
+     * la navigation transporte une valeur, que l'écran d'arrivée réclame avec
+     * son type attendu.
+     */
+    private Object parametre;
+
+    /** Affiche la vue en lui transmettant une donnée de navigation. */
+    public void afficher(String nomDeVue, String titre, Object parametre) {
+        this.parametre = parametre;
+        afficher(nomDeVue, titre);
+    }
+
+    /**
+     * Donnée transmise par l'écran précédent, consommée au passage : deux
+     * lectures successives ne rendraient pas la même chose, ce qui évite
+     * qu'un écran hérite par accident du paramètre d'un autre.
+     */
+    public <T> T parametre(Class<T> type) {
+        Object valeur = parametre;
+        parametre = null;
+        return type.isInstance(valeur) ? type.cast(valeur) : null;
+    }
+
     /** Remplace le contenu de la fenêtre par la vue demandée. */
     public void afficher(String nomDeVue, String titre) {
         Parent racine = charger(nomDeVue);

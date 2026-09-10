@@ -52,4 +52,26 @@ public interface EtatMatch {
     default boolean estTerminal() {
         return false;
     }
+
+    /**
+     * L'état accepte-t-il un démarrage ?
+     *
+     * Existe pour que l'IHM sache quoi **proposer** sans interroger le statut
+     * — même principe que peutCreerTournoi() côté rôles : on demande à
+     * l'objet ce qu'il autorise plutôt que de tester ce qu'il est. Un écran
+     * qui ferait « if (statut == PLANIFIE) » dupliquerait la machine à états
+     * et finirait par diverger.
+     *
+     * Refusé par défaut, comme les transitions elles-mêmes : seul Planifie
+     * redéfinit. Ce n'est pas une autorisation, seulement une intention
+     * d'affichage — le refus qui fait foi reste celui de demarrer().
+     */
+    default boolean autoriseDemarrage() {
+        return false;
+    }
+
+    /** Même rôle pour la saisie du score : seul EnCours redéfinit. */
+    default boolean autoriseSaisie() {
+        return false;
+    }
 }

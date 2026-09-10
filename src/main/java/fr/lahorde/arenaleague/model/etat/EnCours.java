@@ -31,6 +31,11 @@ public final class EnCours implements EtatMatch {
      * diagramme de séquence.
      */
     @Override
+    public boolean autoriseSaisie() {
+        return true;
+    }
+
+    @Override
     public EtatMatch saisirScore(Match match, Score score) {
         return new Termine();
     }

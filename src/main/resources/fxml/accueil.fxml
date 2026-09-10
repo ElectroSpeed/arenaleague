@@ -39,6 +39,14 @@
                     <Label text="Tournois" styleClass="titre-section"/>
                     <Label fx:id="compteurTournois" styleClass="aide-champ"/>
                     <Region HBox.hgrow="ALWAYS"/>
+                    <!-- Ouvrir un tournoi n'est réservé à personne : RG-02
+                         autorise les deux rôles à saisir un score. -->
+                    <Button fx:id="boutonOuvrir"
+                            text="Ouvrir le tournoi"
+                            onAction="#ouvrirTournoi"
+                            styleClass="bouton-secondaire"
+                            prefHeight="38"
+                            disable="true"/>
                     <!-- Visible pour l'Organisateur seulement. Le refus réel
                          est dans le service : voir CE-01. -->
                     <Button fx:id="boutonCreerTournoi"

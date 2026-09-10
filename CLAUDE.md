@@ -176,11 +176,14 @@ dépôt.
 **Phase 2 — production**, tâches suivies dans ClickUp
 (dossier *ArenaLeague — Projet*, liste *Phase 2 — Production*) :
 
-- 2.0 à 2.10 : **vérifiées sur poste** le 10 septembre 2026. `mvn clean
+- 2.0 à 2.11 : **vérifiées sur poste** le 10 septembre 2026. `mvn clean
   install` réussit, les 38 tests passent, l'application se lance et s'utilise
-  en profil H2.
-- 2.11 à 2.13 : IHM restante — saisie des résultats, classement en direct,
-  gestion des erreurs.
+  en profil H2, jusqu'à la génération automatique de la finale.
+- 2.12 à 2.13 : IHM restante — classement en direct, gestion des erreurs.
+
+**Avant chaque répétition de la démonstration**, supprimer `data/` : Flyway
+rejoue le seed. Le tableau de référence du classement n'apparaît que si l'on
+saisit exactement Bravo 0–2 Charlie puis Charlie 3–0 Delta.
 
 **Environnement** : ni Maven ni JDK ne sont installés séparément sur le poste.
 Les deux viennent d'IntelliJ IDEA Community (Maven 3.9.9, JBR 21) :

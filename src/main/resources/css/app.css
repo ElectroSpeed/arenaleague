@@ -446,12 +446,54 @@
     -fx-background-color: rouge;
     -fx-text-fill: blanc;               /* 4.91:1 */
 }
-.badge-ouvert {
+.badge-ouvert, .badge-planifie {
     -fx-background-color: transparent;
     -fx-border-color: bordure-vive;
     -fx-border-radius: 3;
     -fx-text-fill: texte-doux;
 }
+/* Terminé : contour vert sourd. Un match clos n'est pas une alerte, il ne
+   doit pas attirer l'œil autant qu'un match à jouer. */
+.badge-termine {
+    -fx-background-color: succes-fond;
+    -fx-border-color: succes-bord;
+    -fx-border-radius: 3;
+    -fx-text-fill: succes;
+}
+
+/* =====================================================================
+   Écran de saisie des résultats
+   ===================================================================== */
+.panneau-droit {
+    -fx-background-color: surface;
+    -fx-border-color: bordure transparent transparent transparent;
+    -fx-border-width: 0 0 0 1;
+}
+
+/* L'affiche du match sélectionné : c'est le titre du panneau, il doit se
+   lire d'un coup d'œil depuis l'autre bout de la salle. */
+.affiche-match {
+    -fx-font-family: "Bahnschrift SemiBold Condensed", "Bahnschrift", "Segoe UI Semibold", "Segoe UI", sans-serif;
+    -fx-font-size: 19px;
+    -fx-text-fill: blanc;
+}
+.separateur-score {
+    -fx-font-size: 20px;
+    -fx-text-fill: texte-eteint;
+    -fx-padding: 16 0 0 0;
+}
+/* Chiffres du score : même chasse pour toutes les lignes, sinon la colonne
+   danse d'une ligne à l'autre. */
+.cellule-score {
+    -fx-font-family: "Consolas", "Menlo", monospace;
+    -fx-font-size: 13.5px;
+    -fx-text-fill: blanc;
+}
+
+/* Un match clôturé se distingue de toute la ligne, pas seulement de sa
+   pastille — exigence de la Definition of Done de 2.11. */
+.ligne-match-termine .table-cell { -fx-text-fill: texte-eteint; }
+.ligne-match-termine .cellule-score { -fx-text-fill: texte-doux; }
 
 /* Ligne d'une équipe qualifiée — RG-46 */
 .ligne-qualifiee { -fx-font-weight: bold; }

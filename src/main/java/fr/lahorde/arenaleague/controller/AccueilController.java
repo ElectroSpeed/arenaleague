@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 
 import java.time.format.DateTimeFormatter;
@@ -43,6 +44,7 @@ public final class AccueilController {
     @FXML private Label noteRoleLecture;
     @FXML private Label messageErreur;
     @FXML private Button boutonCreerTournoi;
+    @FXML private Button boutonOuvrir;
 
     @FXML private TableView<Tournoi> tableTournois;
     @FXML private TableColumn<Tournoi, String> colonneNom;
@@ -95,6 +97,23 @@ public final class AccueilController {
             cellule -> texte(cellule.getValue().estDemarre() ? "En cours" : "Inscriptions ouvertes"));
         colonneEtat.setCellFactory(colonne -> new CelluleEtat());
 
+        // Ouvrir n'a de sens qu'avec un tournoi choisi : le bouton suit la
+        // sélection plutôt que de refuser après coup.
+        tableTournois.getSelectionModel().selectedItemProperty().addListener(
+            (observable, avant, apres) -> boutonOuvrir.setDisable(apres == null));
+
+        // Le double-clic fait la même chose que le bouton : c'est le geste
+        // qu'on tente d'instinct sur une ligne de tableau.
+        tableTournois.setRowFactory(table -> {
+            TableRow<Tournoi> ligne = new TableRow<>();
+            ligne.setOnMouseClicked(evenement -> {
+                if (evenement.getClickCount() == 2 && !ligne.isEmpty()) {
+                    ouvrir(ligne.getItem());
+                }
+            });
+            return ligne;
+        });
+
         tableTournois.setPlaceholder(etiquetteVide(organisateur
             ? "Aucun tournoi pour l'instant.\nUtilisez « Créer un tournoi » pour en ajouter un."
             : "Aucun tournoi pour l'instant."));
@@ -106,6 +125,18 @@ public final class AccueilController {
     private void seDeconnecter() {
         contexte.auth().deconnecter();
         vues.afficher("login", "Connexion");
+    }
+
+    @FXML
+    private void ouvrirTournoi() {
+        ouvrir(tableTournois.getSelectionModel().getSelectedItem());
+    }
+
+    /** Le tournoi choisi est transmis à l'écran de saisie par la navigation. */
+    private void ouvrir(Tournoi tournoi) {
+        if (tournoi != null) {
+            vues.afficher("saisie-resultats", tournoi.nom(), tournoi.id());
+        }
     }
 
     @FXML

@@ -25,6 +25,11 @@ public final class Planifie implements EtatMatch {
 
     /** RG-51 : PLANIFIÉ → EN COURS. */
     @Override
+    public boolean autoriseDemarrage() {
+        return true;
+    }
+
+    @Override
     public EtatMatch demarrer(Match match) {
         return new EnCours();
     }

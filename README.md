@@ -144,12 +144,17 @@ démonstration. Livrés hors dépôt, dans les documents de projet.
 | 2.8 Tests unitaires | terminée | 38 tests, 5 classes |
 | 2.9 IHM connexion | terminée | `login.fxml`, `accueil.fxml` |
 | 2.10 IHM création de tournoi | terminée | `creation-tournoi.fxml`, calendrier |
-| 2.11 à 2.13 IHM | à faire | Saisie des résultats, classement en direct, erreurs |
+| 2.11 IHM saisie des résultats | terminée | `saisie-resultats.fxml`, propagation du tour suivant |
+| 2.12 à 2.13 IHM | à faire | Classement en direct, gestion des erreurs |
 
 La chaîne complète a été exécutée sur poste le 10 septembre 2026 :
 `mvn clean install` réussit, les 38 tests passent, et l'application se lance
-et s'utilise en profil H2. Les tâches 2.0 à 2.10 sont donc vérifiées, plus
+et s'utilise en profil H2. Les tâches 2.0 à 2.11 sont donc vérifiées, plus
 seulement écrites.
+
+L'étape la plus démonstrative du scénario est constatée : en élimination
+directe, **la finale se génère seule** une fois les deux demi-finales
+closes, sans aucune action de l'utilisateur (RG-34, RG-35).
 
 ---
 
