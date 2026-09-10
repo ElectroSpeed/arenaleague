@@ -225,6 +225,7 @@ exécutions du même calcul pourraient produire deux classements différents.
 ```
 arenaleague/
 ├── pom.xml
+├── CLAUDE.md                       contexte projet, lu par Claude Code
 ├── scripts/                        amorçage et remise à zéro PostgreSQL
 └── src/
     ├── main/java/fr/lahorde/arenaleague/
