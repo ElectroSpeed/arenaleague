@@ -17,10 +17,17 @@
 --  Empreintes BCrypt réelles (coût 10). Mots de passe : orga / arbitre.
 --  À noter en soutenance : même sur un projet d'école, les mots de passe
 --  ne sont jamais stockés en clair.
+--
+--  Révision « $2a$ » et non « $2b$ » : jbcrypt 0.4, la bibliothèque utilisée
+--  par BCryptVerificateur, ne connaît pas la révision 2b et lève « Invalid
+--  salt revision » à la vérification. Une empreinte 2b rend la connexion
+--  impossible sans qu'aucun test ne le voie, puisque les tests de service
+--  utilisent un vérificateur factice. Empreintes produites par la
+--  bibliothèque elle-même, via BCrypt.gensalt(10).
 -- ---------------------------------------------------------------------
 INSERT INTO utilisateur (login, mot_de_passe_hash, role) VALUES
-  ('orga',    '$2b$10$vm8afYHxi6GW75Emob2/uO3gtAOpPDE637wmsSd.PY6RA8sidpo1O', 'ORGANISATEUR'),
-  ('arbitre', '$2b$10$IqRKdM5PcLQR.WpPvQExMOo92Qm7t.qf350GkCaETAfn5qVD8Z7fy', 'ARBITRE');
+  ('orga',    '$2a$10$xSJy.MKrYTcaQMtZqINUMODI.ihWtjxgZAevR/HVCYJPMJKQanIEC', 'ORGANISATEUR'),
+  ('arbitre', '$2a$10$bc2ysLYrjD3VWSGjnXDQReUxkz3LeaG6cMvnJLXIFUIvM1B4fWXAW', 'ARBITRE');
 
 
 -- ---------------------------------------------------------------------
