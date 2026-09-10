@@ -121,8 +121,15 @@ la règle n'est pas dans le document : le signaler plutôt que d'inventer.
 mvn test
 ```
 
-38 tests, 5 classes, tous sur la couche service. Les repositories sont
-remplacés par des implémentations en mémoire — aucune base nécessaire.
+42 tests, 6 classes. Les repositories sont remplacés par des implémentations
+en mémoire — aucune base nécessaire.
+
+Cinq classes couvrent la couche service. La sixième, `EmpreintesDuSeedTest`,
+est d'une autre nature : elle confronte les empreintes de `V2__seed.sql` au
+**vrai** `BCryptVerificateur`. Les autres injectent un vérificateur factice —
+le bon choix pour tester la logique, mais c'est ce qui a laissé passer des
+empreintes `$2b$` illisibles avec 38 tests au vert. **Ne pas la neutraliser
+pour gagner une demi-seconde de build.**
 
 `CasErreurDemonstrationTest` couvre les cinq cas `CE-01` à `CE-05` du script
 de démonstration, **chaque test nommé par son identifiant**. Si la
@@ -177,7 +184,7 @@ dépôt.
 (dossier *ArenaLeague — Projet*, liste *Phase 2 — Production*) :
 
 - 2.0 à 2.13 : **vérifiées sur poste** le 10 septembre 2026. `mvn clean
-  install` réussit, les 38 tests passent, et le scénario nominal se joue
+  install` réussit, les 42 tests passent, et le scénario nominal se joue
   entièrement en profil H2 — jusqu'à la finale générée seule et au classement
   recalculé à chaque score, sans rafraîchissement. Les cas d'erreur CE-01,
   CE-02 et CE-04 sont démontrables.

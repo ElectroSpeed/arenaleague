@@ -141,7 +141,7 @@ démonstration. Livrés hors dépôt, dans les documents de projet.
 | 2.5 Tournoi et Strategy de format | terminée | Élimination directe, poule |
 | 2.6 Match et machine à états | terminée | Saisie de score, RG-63 |
 | 2.7 Classement | terminée | Cache invalidé par l'Observer |
-| 2.8 Tests unitaires | terminée | 38 tests, 5 classes |
+| 2.8 Tests unitaires | terminée | 42 tests, 6 classes |
 | 2.9 IHM connexion | terminée | `login.fxml`, `accueil.fxml` |
 | 2.10 IHM création de tournoi | terminée | `creation-tournoi.fxml`, calendrier |
 | 2.11 IHM saisie des résultats | terminée | `saisie-resultats.fxml`, propagation du tour suivant |
@@ -154,7 +154,7 @@ c'est le chemin du cas de démonstration CE-01, qui exige d'atteindre l'écran
 « l'entrée de menu étant masquée ». Le refus vient alors du service.
 
 La chaîne complète a été exécutée sur poste le 10 septembre 2026 :
-`mvn clean install` réussit, les 38 tests passent, et l'application se lance
+`mvn clean install` réussit, les 42 tests passent, et l'application se lance
 et s'utilise en profil H2. Les tâches 2.0 à 2.13 sont donc vérifiées, plus
 seulement écrites.
 
@@ -236,13 +236,18 @@ identifiant**.
 mvn test
 ```
 
-38 tests répartis en 5 classes, tous sur la couche service — c'est là que vit
-la logique. Les repositories sont remplacés par des implémentations en
-mémoire, donc aucune base n'est nécessaire.
+42 tests répartis en 6 classes. Les repositories sont remplacés par des
+implémentations en mémoire, donc aucune base n'est nécessaire.
+
+Cinq classes portent sur la couche service — c'est là que vit la logique. La
+sixième, `EmpreintesDuSeedTest`, ne teste aucun service : elle vérifie qu'une
+**donnée de production**, les empreintes de `V2__seed.sql`, reste compatible
+avec le code qui la consomme.
 
 | Classe | Couvre |
 |--------|--------|
 | `AuthServiceTest` | droits, effacement du mot de passe, message indifférencié |
+| `EmpreintesDuSeedTest` | les comptes du seed s'ouvrent avec le vrai BCrypt |
 | `TournoiServiceTest` | inscriptions et démarrage, RG-11 et RG-20 à RG-23 |
 | `MatchServiceTest` | cycle nominal, transitions interdites, Observer, propagation |
 | `ClassementPouleTest` | un test par critère de départage RG-71 à RG-75, déterminisme |
