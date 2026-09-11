@@ -137,8 +137,7 @@ public final class SaisieResultatsController implements Liberable {
         // pas dans le champ, donc rien d'invalide n'atteint le service.
         champScoreA.setTextFormatter(filtreEntierPositif());
         champScoreB.setTextFormatter(filtreEntierPositif());
-        regleScore.setText("Entiers positifs uniquement (RG-60). "
-            + "Les autres caractères sont refusés à la saisie.");
+        regleScore.setText("Entiers positifs uniquement.");
 
         colonneTour.setCellValueFactory(c -> texte("Tour " + c.getValue().tour()));
         colonneEquipeA.setCellValueFactory(c -> texte(c.getValue().equipeA().nom()));
@@ -175,9 +174,7 @@ public final class SaisieResultatsController implements Liberable {
         tableClassement.setRowFactory(table -> new LigneClassementQualifiee());
         tableClassement.setPlaceholder(etiquetteVide("Aucun match terminé : le classement est vide."));
 
-        noteClassement.setText("Recalculé à chaque score enregistré, sans action de rafraîchissement "
-            + "(RG-63). Départage : points, différence, points marqués, confrontation directe, "
-            + "puis ordre alphabétique (RG-71 à RG-75).");
+        noteClassement.setText("Recalculé à chaque score enregistré.");
 
         // Pattern Observer : le service prévient, l'écran se recalcule.
         contexte.matchs().abonner(ecouteur);
@@ -337,15 +334,11 @@ public final class SaisieResultatsController implements Liberable {
         if (forfaitPossible) {
             boutonForfaitA.setText(match.equipeA().nom() + " déclare forfait");
             boutonForfaitB.setText(match.equipeB().nom() + " déclare forfait");
-            regleForfait.setText("Le score est imposé par le format et le match est clos "
-                + "aussitôt (RG-47). L'adversaire est traité comme un vainqueur ordinaire.");
+            regleForfait.setText("Le score est imposé par le format.");
         }
 
         if (termine) {
-            avertissementCloture.setText(
-                "Match clôturé : TERMINÉ est un état terminal, aucune correction "
-                + "n'est possible (RG-53). La saisie reste tentable et le refus "
-                + "sera prononcé par le service.");
+            avertissementCloture.setText("Match clôturé : le score ne peut plus être modifié.");
             boutonValider.setText("Tenter la saisie");
         } else {
             boutonValider.setText("Valider le score");

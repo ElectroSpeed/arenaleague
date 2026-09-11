@@ -107,7 +107,7 @@
                         styleClass="bouton-principal"
                         maxWidth="Infinity"
                         prefHeight="42"/>
-                <Label text="Le démarrage est définitif : une fois le calendrier généré, la composition du tournoi ne peut plus changer (RG-22)."
+                <Label text="Le démarrage est définitif."
                        styleClass="aide-champ"
                        wrapText="true"/>
             </VBox>

@@ -78,8 +78,7 @@ public final class AccueilController {
 
         if (!organisateur) {
             noteRoleLecture.setText(
-                "Vous consultez les tournois en lecture. La création d'un tournoi "
-                + "est réservée à l'Organisateur (RG-01).");
+                "La création d'un tournoi est réservée à l'Organisateur.");
             noteRoleLecture.setVisible(true);
             noteRoleLecture.setManaged(true);
         }
@@ -97,8 +96,7 @@ public final class AccueilController {
         colonneFormat.setCellValueFactory(
             cellule -> texte(cellule.getValue().format().libelle()));
 
-        colonneEtat.setCellValueFactory(
-            cellule -> texte(cellule.getValue().estDemarre() ? "En cours" : "Inscriptions ouvertes"));
+        colonneEtat.setCellValueFactory(cellule -> texte(etatLisible(cellule.getValue())));
         colonneEtat.setCellFactory(colonne -> new CelluleEtat());
 
         // Ouvrir n'a de sens qu'avec un tournoi choisi : le bouton suit la
@@ -193,6 +191,28 @@ public final class AccueilController {
         return new ReadOnlyStringWrapper(valeur);
     }
 
+    /**
+     * Trois états, pas deux. Un tournoi dont tous les matchs sont joués
+     * restait affiché « En cours » indéfiniment : estTermine() existait sur
+     * l'entité mais l'écran ne le lui demandait jamais.
+     */
+    private static String etatLisible(Tournoi tournoi) {
+        if (tournoi.estTermine()) {
+            return "Terminé";
+        }
+        return tournoi.estDemarre() ? "En cours" : "Inscriptions ouvertes";
+    }
+
+    private static String classeDe(Tournoi tournoi) {
+        if (tournoi == null) {
+            return "badge-ouvert";
+        }
+        if (tournoi.estTermine()) {
+            return "badge-termine";
+        }
+        return tournoi.estDemarre() ? "badge-en-cours" : "badge-ouvert";
+    }
+
     /** Cellule de texte portant une classe de style, pour la hiérarchie. */
     private static final class CelluleTexte extends TableCell<Tournoi, String> {
 
@@ -225,11 +245,8 @@ public final class AccueilController {
             }
 
             Tournoi tournoi = getTableRow() == null ? null : getTableRow().getItem();
-            boolean demarre = tournoi != null && tournoi.estDemarre();
-
             Label pastille = new Label(valeur);
-            pastille.getStyleClass().addAll(
-                "badge-etat", demarre ? "badge-en-cours" : "badge-ouvert");
+            pastille.getStyleClass().addAll("badge-etat", classeDe(tournoi));
             setGraphic(pastille);
         }
     }

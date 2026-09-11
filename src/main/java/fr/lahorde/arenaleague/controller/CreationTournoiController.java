@@ -102,10 +102,8 @@ public final class CreationTournoiController {
         champFormat.getSelectionModel().selectFirst();
 
         regleEffectif.setText(
-            "Cochez les équipes à inscrire. Une équipe doit compter entre "
-            + Equipe.EFFECTIF_MIN + " et " + Equipe.EFFECTIF_MAX
-            + " joueurs pour être inscrite (RG-10) ; les autres restent visibles "
-            + "mais ne peuvent pas être cochées.");
+            "Une équipe doit compter entre " + Equipe.EFFECTIF_MIN + " et "
+            + Equipe.EFFECTIF_MAX + " joueurs pour être inscrite.");
 
         listeEquipes.setCellFactory(liste -> new CelluleEquipe());
         listeEquipes.setPlaceholder(
@@ -117,9 +115,7 @@ public final class CreationTournoiController {
             cellule -> texte(cellule.getValue().equipeA().nom()));
         colonneEquipeB.setCellValueFactory(
             cellule -> texte(cellule.getValue().equipeB().nom()));
-        tableCalendrier.setPlaceholder(etiquetteVide(
-            "Le calendrier apparaîtra ici.\n"
-            + "Renseignez le tournoi, cochez les équipes, puis lancez la génération."));
+        tableCalendrier.setPlaceholder(etiquetteVide("Le calendrier apparaîtra ici."));
 
         chargerEquipes();
         rafraichirCompteur();
@@ -201,7 +197,7 @@ public final class CreationTournoiController {
             "Format : " + format.libelle() + "\n"
             + "Équipes inscrites (" + choisies.size() + ") : " + nomsDe(choisies) + "\n\n"
             + "Le tournoi démarrera immédiatement. Les inscriptions seront closes "
-            + "et le calendrier ne pourra plus être regénéré (RG-22).");
+            + "et le calendrier ne pourra plus être regénéré.");
 
         ButtonType generer = new ButtonType("Générer le calendrier");
         ButtonType annuler = new ButtonType("Revenir à la saisie", ButtonType.CANCEL.getButtonData());
@@ -336,7 +332,7 @@ public final class CreationTournoiController {
     private static String messageEffectif(Equipe equipe) {
         return "L'équipe " + equipe.nom() + " compte " + equipe.effectif()
              + " joueur(s) ; il en faut entre " + Equipe.EFFECTIF_MIN
-             + " et " + Equipe.EFFECTIF_MAX + " (RG-10).";
+             + " et " + Equipe.EFFECTIF_MAX + ".";
     }
 
     private static final class LibelleFormat extends StringConverter<Format> {
