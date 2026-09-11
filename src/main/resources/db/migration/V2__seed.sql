@@ -41,7 +41,19 @@ INSERT INTO utilisateur (login, mot_de_passe_hash, role) VALUES
 --  l'ordre des noms les sépare. Renommer une équipe sans vérifier cet
 --  ordre casse la démonstration du dernier critère de départage.
 -- ---------------------------------------------------------------------
-INSERT INTO equipe (nom) VALUES ('Gen.G'), ('Hanwha Life Esports'), ('T1'), ('KT Rolster');
+-- Les dix equipes de la LCK 2026. Les quatre premieres sont celles du
+-- scenario de demonstration : elles seules sont inscrites a un tournoi, et
+-- leur ordre alphabetique porte le departage RG-75 du tableau de reference.
+-- Les six autres existent pour que l'ecran de creation ait un vivier
+-- realiste : huit equipes permettent une elimination directe complete.
+--
+-- Les noms d'equipes sont verifies. Les pseudos de joueurs sont
+-- illustratifs : les rosters changent a chaque split, et aucune regle de
+-- gestion ne depend d'eux — seul leur nombre compte (RG-10).
+INSERT INTO equipe (nom) VALUES
+  ('Gen.G'), ('Hanwha Life Esports'), ('T1'), ('KT Rolster'),
+  ('BNK FearX'), ('DN SOOPers'), ('Dplus KIA'), ('Hanjin Brion'),
+  ('KIWOOM DRX'), ('Nongshim RedForce');
 
 INSERT INTO joueur (pseudo, equipe_id) VALUES
   ('Chovy',     (SELECT id FROM equipe WHERE nom = 'Gen.G')),
@@ -58,7 +70,31 @@ INSERT INTO joueur (pseudo, equipe_id) VALUES
 
   ('Bdd',    (SELECT id FROM equipe WHERE nom = 'KT Rolster')),
   ('Deft',    (SELECT id FROM equipe WHERE nom = 'KT Rolster')),
-  ('Cuzz',    (SELECT id FROM equipe WHERE nom = 'KT Rolster'));
+  ('Cuzz',    (SELECT id FROM equipe WHERE nom = 'KT Rolster')),
+
+  ('Clozer',    (SELECT id FROM equipe WHERE nom = 'BNK FearX')),
+  ('Diable',    (SELECT id FROM equipe WHERE nom = 'BNK FearX')),
+  ('Raptor',    (SELECT id FROM equipe WHERE nom = 'BNK FearX')),
+
+  ('Duro',      (SELECT id FROM equipe WHERE nom = 'DN SOOPers')),
+  ('Pyosik',    (SELECT id FROM equipe WHERE nom = 'DN SOOPers')),
+  ('Bull',      (SELECT id FROM equipe WHERE nom = 'DN SOOPers')),
+
+  ('ShowMaker', (SELECT id FROM equipe WHERE nom = 'Dplus KIA')),
+  ('Lucid',     (SELECT id FROM equipe WHERE nom = 'Dplus KIA')),
+  ('Aiming',    (SELECT id FROM equipe WHERE nom = 'Dplus KIA')),
+
+  ('Morgan',    (SELECT id FROM equipe WHERE nom = 'Hanjin Brion')),
+  ('Karis',     (SELECT id FROM equipe WHERE nom = 'Hanjin Brion')),
+  ('Hena',      (SELECT id FROM equipe WHERE nom = 'Hanjin Brion')),
+
+  ('Teddy',     (SELECT id FROM equipe WHERE nom = 'KIWOOM DRX')),
+  ('Juhan',     (SELECT id FROM equipe WHERE nom = 'KIWOOM DRX')),
+  ('Andil',     (SELECT id FROM equipe WHERE nom = 'KIWOOM DRX')),
+
+  ('Jiwoo',     (SELECT id FROM equipe WHERE nom = 'Nongshim RedForce')),
+  ('Calix',     (SELECT id FROM equipe WHERE nom = 'Nongshim RedForce')),
+  ('Sylvie',    (SELECT id FROM equipe WHERE nom = 'Nongshim RedForce'));
 
 
 -- =====================================================================

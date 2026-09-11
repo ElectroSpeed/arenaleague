@@ -156,6 +156,12 @@ alphabétique qui place Gen.G devant Hanwha Life Esports. Renommer une équipe
 sans vérifier cet ordre casse la démonstration du dernier critère de
 départage — le seul argument qui justifie son existence.
 
+Le seed contient les **dix équipes de la LCK 2026**, mais seules les quatre
+ci-dessus sont inscrites à un tournoi. Les six autres forment un vivier : huit
+équipes disponibles permettent de générer une élimination directe complète,
+à trois tours. Les pseudos de joueurs sont **illustratifs** — les rosters
+changent à chaque split, et seule leur quantité compte (RG-10).
+
 ---
 
 ## Base de données
