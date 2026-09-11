@@ -1,6 +1,7 @@
 package fr.lahorde.arenaleague.model.etat;
 
 import fr.lahorde.arenaleague.model.Match;
+import fr.lahorde.arenaleague.model.Score;
 import fr.lahorde.arenaleague.model.StatutMatch;
 
 /**
@@ -24,6 +25,17 @@ public final class Planifie implements EtatMatch {
     }
 
     /** RG-51 : PLANIFIÉ → EN COURS. */
+    @Override
+    public boolean autoriseForfait() {
+        return true;
+    }
+
+    /** RG-47 : forfait accepté depuis cet état, le match est clos aussitôt. */
+    @Override
+    public EtatMatch declarerForfait(Match match, Score score) {
+        return new Termine();
+    }
+
     @Override
     public boolean autoriseDemarrage() {
         return true;

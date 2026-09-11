@@ -41,11 +41,39 @@ public interface EtatMatch {
      * RG-52 : EN COURS -> TERMINÉ. La saisie du score **est** la clôture.
      * Refusé par défaut : seul EnCours redéfinit cette méthode.
      *
+     * RG-61 énonce la même exigence côté service — « le match doit être à
+     * l'état EN COURS ». Elle n'est pas vérifiée ailleurs : c'est ce refus
+     * par défaut qui la porte, et le message cite RG-54, la règle générale
+     * dont il découle.
+     *
      * Le refus depuis Termine est le cas de démonstration CE-02 (RG-53).
      */
     default EtatMatch saisirScore(Match match, Score score) {
         throw new TransitionInvalideException(
             "Impossible de saisir un score sur un match " + libelle().toLowerCase() + " (RG-54)");
+    }
+
+    /**
+     * RG-47 : le forfait ferme le match sans passer par la saisie d'un score.
+     *
+     * C'est la seule transition qui court-circuite le cycle : PLANIFIÉ **ou**
+     * EN COURS mènent directement à TERMINÉ. Une équipe qui ne se présente
+     * pas n'a pas à voir son match démarré pour être déclarée forfait.
+     *
+     * Le score n'est pas saisi mais **imposé par le format** (RG-48, RG-49) :
+     * l'état reçoit celui que la stratégie a produit et se contente de
+     * transiter. Refusé par défaut, comme les autres transitions — d'où le
+     * refus sur un match déjà clos, sans que Termine ait à l'écrire.
+     */
+    default EtatMatch declarerForfait(Match match, Score score) {
+        throw new TransitionInvalideException(
+            "Impossible de déclarer forfait sur un match "
+            + libelle().toLowerCase() + " (RG-47)");
+    }
+
+    /** L'état accepte-t-il une déclaration de forfait ? Voir autoriseDemarrage(). */
+    default boolean autoriseForfait() {
+        return false;
     }
 
     /** RG-53 : seul TERMINÉ est terminal. */

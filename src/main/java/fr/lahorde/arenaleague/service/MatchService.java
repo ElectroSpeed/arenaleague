@@ -123,6 +123,46 @@ public final class MatchService {
         return resultat;
     }
 
+    /**
+     * RG-47, RG-48, RG-49 : déclaration de forfait.
+     *
+     * Même séquence que saisirScore, à une différence près : le score n'est
+     * pas fourni par l'appelant mais **demandé à la stratégie**. Le service
+     * ignore donc que la poule enregistre 0 – 3 et l'élimination 0 – 1 — il
+     * ne teste toujours pas le format.
+     *
+     * Le tour suivant est généré comme après un match joué, ce qu'exige
+     * explicitement RG-49 : une équipe qualifiée par forfait l'est au même
+     * titre qu'une équipe qualifiée sur le terrain.
+     *
+     * @param forfaitEquipeA true si c'est l'équipe A qui déclare forfait
+     */
+    public Match declarerForfait(long tournoiId, long matchId, boolean forfaitEquipeA) {
+        Utilisateur operateur = session.exigerDroitSaisirScore();        // 1 — RG-02
+
+        Match resultat = connexions.enTransaction(() -> {
+            Tournoi tournoi = charger(tournoiId);                        // 2
+            Match match = trouver(tournoi, matchId);
+            FormatTournoi strategie = formats.pour(tournoi.format());
+
+            Score score = strategie.scoreForfait(forfaitEquipeA);        // 3 — RG-48, RG-49
+
+            match.declarerForfait(score);                                // 4 — RG-47
+            match.affecterArbitre(operateur);
+            matchs.mettreAJour(match);                                   // 5
+
+            List<Match> suivants = strategie.genererTourSuivant(tournoi); // 6 — RG-34, RG-35
+            if (!suivants.isEmpty()) {
+                tournoi.ajouterMatchs(suivants);
+                matchs.creerTous(tournoiId, suivants);
+            }
+            return match;
+        });
+
+        notifier(tournoiId);                                             // 7 — RG-63
+        return resultat;
+    }
+
     /** RG-03 : consultation, sans distinction de rôle. */
     public List<Match> matchsDuTournoi(long tournoiId) {
         session.exigerConnecte();

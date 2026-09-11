@@ -120,6 +120,9 @@ CREATE TABLE rencontre (
     etat        VARCHAR(12) NOT NULL DEFAULT 'PLANIFIE',
     arbitre_id  BIGINT,
 
+    -- RG-81 : clés étrangères de la rencontre vers le tournoi et les équipes.
+    -- ON DELETE RESTRICT côté equipe : supprimer une équipe qui a joué
+    -- effacerait un résultat, donc fausserait un classement déjà publié.
     CONSTRAINT fk_rencontre_tournoi FOREIGN KEY (tournoi_id)
         REFERENCES tournoi (id) ON DELETE CASCADE,
     CONSTRAINT fk_rencontre_equipe_a FOREIGN KEY (equipe_a_id)

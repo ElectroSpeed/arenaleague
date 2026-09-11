@@ -31,6 +31,17 @@ public final class EnCours implements EtatMatch {
      * diagramme de séquence.
      */
     @Override
+    public boolean autoriseForfait() {
+        return true;
+    }
+
+    /** RG-47 : forfait accepté depuis cet état, le match est clos aussitôt. */
+    @Override
+    public EtatMatch declarerForfait(Match match, Score score) {
+        return new Termine();
+    }
+
+    @Override
     public boolean autoriseSaisie() {
         return true;
     }

@@ -90,7 +90,7 @@ la règle n'est pas dans le document : le signaler plutôt que d'inventer.
 | Élimination directe | **Puissance de 2 stricte** (4, 8, 16, 32) | implémenter les byes |
 | Poules | Poule unique, **sans phase finale** | enchaîner poules → élimination |
 | Barème poule | 3 / 1 / 0 | — |
-| Forfait | Match par match : 0–3 en poule, 0–1 en élimination | créer un état dédié |
+| Forfait | **Implémenté** — RG-47 à RG-49. Match par match, 0–3 en poule, 0–1 en élimination | créer un état dédié |
 | Petite finale | **Aucune** (RG-37) | — |
 | Export CSV/PDF | **Hors périmètre** pour l'instant | — |
 | Docker | **Écarté** par choix de l'utilisateur | recréer un docker-compose |
@@ -121,7 +121,7 @@ la règle n'est pas dans le document : le signaler plutôt que d'inventer.
 mvn test
 ```
 
-42 tests, 6 classes. Les repositories sont remplacés par des implémentations
+50 tests, 7 classes. Les repositories sont remplacés par des implémentations
 en mémoire — aucune base nécessaire.
 
 Cinq classes couvrent la couche service. La sixième, `EmpreintesDuSeedTest`,
@@ -184,7 +184,7 @@ dépôt.
 (dossier *ArenaLeague — Projet*, liste *Phase 2 — Production*) :
 
 - 2.0 à 2.13 : **vérifiées sur poste** le 10 septembre 2026. `mvn clean
-  install` réussit, les 42 tests passent, et le scénario nominal se joue
+  install` réussit, les 50 tests passent, et le scénario nominal se joue
   entièrement en profil H2 — jusqu'à la finale générée seule et au classement
   recalculé à chaque score, sans rafraîchissement. Les cas d'erreur CE-01,
   CE-02 et CE-04 sont démontrables.

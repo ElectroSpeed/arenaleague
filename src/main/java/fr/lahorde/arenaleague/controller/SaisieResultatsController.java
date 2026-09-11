@@ -92,6 +92,10 @@ public final class SaisieResultatsController implements Liberable {
     @FXML private Label messageSucces;
     @FXML private Button boutonDemarrer;
     @FXML private Button boutonValider;
+    @FXML private VBox zoneForfait;
+    @FXML private Button boutonForfaitA;
+    @FXML private Button boutonForfaitB;
+    @FXML private Label regleForfait;
 
     private final AppContext contexte;
     private final Vues vues;
@@ -226,6 +230,39 @@ public final class SaisieResultatsController implements Liberable {
         }
     }
 
+    /**
+     * RG-47 à RG-49 : déclaration de forfait.
+     *
+     * L'écran ne connaît **ni le score ni le format** : il désigne l'équipe
+     * absente, et c'est la stratégie qui décide — 0 – 3 en poule, 0 – 1 en
+     * élimination directe. Ajouter un troisième format ne toucherait pas
+     * cette classe, une fois de plus.
+     */
+    private void declarerForfait(boolean forfaitEquipeA) {
+        Match match = selection();
+        if (match == null) {
+            return;
+        }
+        masquerMessages();
+
+        String absente = (forfaitEquipeA ? match.equipeA() : match.equipeB()).nom();
+        if (erreurs.executer("déclarer le forfait",
+                () -> contexte.matchs().declarerForfait(tournoiId, match.id(), forfaitEquipeA))) {
+            recharger(match.id(), "Forfait de " + absente
+                + " enregistré. Le score a été imposé par le format du tournoi.");
+        }
+    }
+
+    @FXML
+    private void forfaitEquipeA() {
+        declarerForfait(true);
+    }
+
+    @FXML
+    private void forfaitEquipeB() {
+        declarerForfait(false);
+    }
+
     @FXML
     private void retourAccueil() {
         vues.afficher("accueil", contexte.session().exigerConnecte().login());
@@ -292,6 +329,17 @@ public final class SaisieResultatsController implements Liberable {
         montrer(boutonValider, !demarrable);
         montrer(zoneScore, !demarrable);
         montrer(avertissementCloture, termine);
+
+        // RG-47 : proposé tant que le match n'est pas clos, qu'il ait été
+        // démarré ou non. On demande à l'état, on ne teste pas le statut.
+        boolean forfaitPossible = match.etat().autoriseForfait();
+        montrer(zoneForfait, forfaitPossible);
+        if (forfaitPossible) {
+            boutonForfaitA.setText(match.equipeA().nom() + " déclare forfait");
+            boutonForfaitB.setText(match.equipeB().nom() + " déclare forfait");
+            regleForfait.setText("Le score est imposé par le format et le match est clos "
+                + "aussitôt (RG-47). L'adversaire est traité comme un vainqueur ordinaire.");
+        }
 
         if (termine) {
             avertissementCloture.setText(

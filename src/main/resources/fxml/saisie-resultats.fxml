@@ -177,6 +177,27 @@
                         prefHeight="40"
                         visible="false"
                         managed="false"/>
+
+                <!-- RG-47 : le forfait se déclare match par match, sans passer
+                     par la saisie. Deux boutons plutôt qu'une liste : en
+                     démonstration, on désigne l'équipe absente d'un clic. -->
+                <VBox fx:id="zoneForfait"
+                      spacing="6"
+                      visible="false"
+                      managed="false">
+                    <Label text="FORFAIT" styleClass="etiquette-champ"/>
+                    <Button fx:id="boutonForfaitA"
+                            onAction="#forfaitEquipeA"
+                            styleClass="bouton-secondaire"
+                            maxWidth="Infinity"
+                            prefHeight="34"/>
+                    <Button fx:id="boutonForfaitB"
+                            onAction="#forfaitEquipeB"
+                            styleClass="bouton-secondaire"
+                            maxWidth="Infinity"
+                            prefHeight="34"/>
+                    <Label fx:id="regleForfait" styleClass="aide-champ" wrapText="true"/>
+                </VBox>
             </VBox>
         </VBox>
     </right>

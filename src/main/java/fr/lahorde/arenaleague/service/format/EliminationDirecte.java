@@ -117,6 +117,17 @@ public final class EliminationDirecte implements FormatTournoi {
      * par ordre alphabétique — sans quoi l'ordre dépendrait du parcours en
      * mémoire et deux exécutions donneraient deux résultats.
      */
+    /**
+     * RG-49 : forfait enregistré 1 – 0 pour l'adversaire.
+     *
+     * 0 – 1 suffit à départager, et l'adversaire est qualifié pour le tour
+     * suivant exactement comme après un match joué (RG-34).
+     */
+    @Override
+    public Score scoreForfait(boolean forfaitEquipeA) {
+        return forfaitEquipeA ? new Score(0, 1) : new Score(1, 0);
+    }
+
     @Override
     public List<LigneClassement> calculerClassement(Tournoi tournoi) {
         Map<Equipe, Integer> dernierTourAtteint = new HashMap<>();

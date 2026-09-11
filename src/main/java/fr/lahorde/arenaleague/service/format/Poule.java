@@ -70,6 +70,17 @@ public final class Poule implements FormatTournoi {
      * L'ordre des critères est strict : points, différence, points marqués,
      * confrontation directe, puis ordre alphabétique.
      */
+    /**
+     * RG-48 : forfait enregistré 3 – 0 pour l'adversaire.
+     *
+     * L'adversaire encaisse une victoire pleine : trois points marqués, le
+     * barème de RG-44 s'applique ensuite sans traitement particulier.
+     */
+    @Override
+    public Score scoreForfait(boolean forfaitEquipeA) {
+        return forfaitEquipeA ? new Score(0, 3) : new Score(3, 0);
+    }
+
     @Override
     public List<LigneClassement> calculerClassement(Tournoi tournoi) {
         Map<Equipe, int[]> bilans = new LinkedHashMap<>();

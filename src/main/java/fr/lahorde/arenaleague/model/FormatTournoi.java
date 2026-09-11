@@ -43,6 +43,18 @@ public interface FormatTournoi {
      */
     void validerScore(Score score);
 
+    /**
+     * RG-48 et RG-49 : score imposé lorsqu'une équipe déclare forfait.
+     *
+     * 0 – 3 en poule, 0 – 1 en élimination directe. Le forfait n'est donc pas
+     * un état ni un drapeau : c'est un score comme un autre, ce qui laisse le
+     * classement, le départage et la qualification fonctionner sans savoir
+     * qu'il y a eu forfait.
+     *
+     * @param forfaitEquipeA true si c'est l'équipe A qui déclare forfait
+     */
+    Score scoreForfait(boolean forfaitEquipeA);
+
     /** RG-44 et RG-71 à RG-76 selon le format. Liste triée, rang renseigné. */
     List<LigneClassement> calculerClassement(Tournoi tournoi);
 

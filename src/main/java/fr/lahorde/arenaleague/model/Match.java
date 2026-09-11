@@ -91,6 +91,19 @@ public final class Match {
         this.etat = suivant;
     }
 
+    /**
+     * RG-47 : déclare le forfait et clôt le match.
+     *
+     * Le score vient de la stratégie du format, pas de l'appelant : c'est
+     * RG-48 en poule et RG-49 en élimination directe qui le fixent.
+     */
+    public void declarerForfait(Score score) {
+        Objects.requireNonNull(score, "score");
+        EtatMatch suivant = etat.declarerForfait(this, score);
+        this.score = score;
+        this.etat = suivant;
+    }
+
     /** Réservé au repository : reconstruit un match déjà terminé depuis la base. */
     public void restaurerScore(Score score) {
         this.score = score;
