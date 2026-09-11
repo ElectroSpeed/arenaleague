@@ -106,10 +106,26 @@ public final class TournoiService {
         });
     }
 
-    /** RG-03 : la consultation exige une session, sans distinction de rôle. */
+    /**
+     * RG-03 : la consultation exige une session, sans distinction de rôle.
+     *
+     * Les agrégats sont rendus **complets**, équipes et matchs chargés. Sans
+     * cela, un tournoi de la liste ne saurait pas dire s'il est terminé —
+     * estTermine() interroge ses matchs, et une liste vide répond toujours
+     * non. C'est peu de requêtes de plus pour une poignée de tournois, et ça
+     * évite des objets à moitié peuplés dont on ne sait plus ce qu'on peut
+     * leur demander.
+     */
     public List<Tournoi> lister() {
         session.exigerConnecte();
-        return connexions.enTransaction(tournois::tous);
+        return connexions.enTransaction(() -> {
+            List<Tournoi> liste = tournois.tous();
+            for (Tournoi tournoi : liste) {
+                tournoi.restaurer(equipes.inscritesA(tournoi.id()),
+                                  matchs.parTournoi(tournoi.id()));
+            }
+            return liste;
+        });
     }
 
     public Tournoi parId(long tournoiId) {
