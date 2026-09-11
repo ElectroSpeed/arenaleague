@@ -42,30 +42,30 @@ class ClassementPouleTest {
     @DisplayName("RG-75 : deux équipes strictement à égalité sont départagées "
                + "par l'ordre alphabétique, leur confrontation directe étant nulle")
     void tableauDeReference() {
-        Tournoi tournoi = poule("Alpha", "Bravo", "Charlie", "Delta");
+        Tournoi tournoi = poule("Gen.G", "Hanwha Life Esports", "T1", "KT Rolster");
         tournoi.demarrer(poule.genererMatchs(tournoi));
 
-        jouer(tournoi, "Alpha",   "Bravo",   1, 1);
-        jouer(tournoi, "Alpha",   "Delta",   2, 0);
-        jouer(tournoi, "Alpha",   "Charlie", 0, 2);
-        jouer(tournoi, "Bravo",   "Delta",   2, 0);
-        jouer(tournoi, "Bravo",   "Charlie", 0, 2);
-        jouer(tournoi, "Charlie", "Delta",   3, 0);
+        jouer(tournoi, "Gen.G",   "Hanwha Life Esports",   1, 1);
+        jouer(tournoi, "Gen.G",   "KT Rolster",   2, 0);
+        jouer(tournoi, "Gen.G",   "T1", 0, 2);
+        jouer(tournoi, "Hanwha Life Esports",   "KT Rolster",   2, 0);
+        jouer(tournoi, "Hanwha Life Esports",   "T1", 0, 2);
+        jouer(tournoi, "T1", "KT Rolster",   3, 0);
 
         List<LigneClassement> classement = poule.calculerClassement(tournoi);
 
         assertThat(classement).extracting(l -> l.equipe().nom())
-            .containsExactly("Charlie", "Alpha", "Bravo", "Delta");
+            .containsExactly("T1", "Gen.G", "Hanwha Life Esports", "KT Rolster");
         assertThat(classement).extracting(LigneClassement::points)
             .containsExactly(9, 4, 4, 0);
 
-        LigneClassement alpha = classement.get(1);
-        LigneClassement bravo = classement.get(2);
+        LigneClassement genG   = classement.get(1);
+        LigneClassement hanwha = classement.get(2);
 
         // Les trois premiers critères ne les séparent pas...
-        assertThat(alpha.points()).isEqualTo(bravo.points());
-        assertThat(alpha.difference()).isEqualTo(bravo.difference());
-        assertThat(alpha.marques()).isEqualTo(bravo.marques());
+        assertThat(genG.points()).isEqualTo(hanwha.points());
+        assertThat(genG.difference()).isEqualTo(hanwha.difference());
+        assertThat(genG.marques()).isEqualTo(hanwha.marques());
         // ...leur duel non plus (1 – 1). Seul RG-75 tranche.
 
         // RG-46 : les deux premières sont qualifiées.
@@ -76,11 +76,11 @@ class ClassementPouleTest {
     @Test
     @DisplayName("En round-robin, total des points marqués = total des encaissés")
     void coherenceDesTotaux() {
-        Tournoi tournoi = poule("Alpha", "Bravo", "Charlie");
+        Tournoi tournoi = poule("Gen.G", "Hanwha Life Esports", "T1");
         tournoi.demarrer(poule.genererMatchs(tournoi));
-        jouer(tournoi, "Alpha", "Bravo",   3, 1);
-        jouer(tournoi, "Alpha", "Charlie", 0, 2);
-        jouer(tournoi, "Bravo", "Charlie", 1, 1);
+        jouer(tournoi, "Gen.G", "Hanwha Life Esports",   3, 1);
+        jouer(tournoi, "Gen.G", "T1", 0, 2);
+        jouer(tournoi, "Hanwha Life Esports", "T1", 1, 1);
 
         List<LigneClassement> classement = poule.calculerClassement(tournoi);
 
@@ -92,41 +92,41 @@ class ClassementPouleTest {
     @Test
     @DisplayName("RG-71 : le nombre de points prime sur tout le reste")
     void critere1Points() {
-        Tournoi tournoi = poule("Alpha", "Bravo", "Charlie");
+        Tournoi tournoi = poule("Gen.G", "Hanwha Life Esports", "T1");
         tournoi.demarrer(poule.genererMatchs(tournoi));
-        jouer(tournoi, "Alpha", "Bravo",   1, 0);
-        jouer(tournoi, "Alpha", "Charlie", 1, 0);
-        jouer(tournoi, "Bravo", "Charlie", 1, 0);
+        jouer(tournoi, "Gen.G", "Hanwha Life Esports",   1, 0);
+        jouer(tournoi, "Gen.G", "T1", 1, 0);
+        jouer(tournoi, "Hanwha Life Esports", "T1", 1, 0);
 
         assertThat(poule.calculerClassement(tournoi))
             .extracting(l -> l.equipe().nom())
-            .containsExactly("Alpha", "Bravo", "Charlie");
+            .containsExactly("Gen.G", "Hanwha Life Esports", "T1");
     }
 
     @Test
     @DisplayName("RG-72 : à points égaux, la différence départage")
     void critere2Difference() {
-        Tournoi tournoi = poule("Alpha", "Bravo", "Charlie");
+        Tournoi tournoi = poule("Gen.G", "Hanwha Life Esports", "T1");
         tournoi.demarrer(poule.genererMatchs(tournoi));
-        jouer(tournoi, "Alpha", "Charlie", 5, 0);   // Alpha : +5
-        jouer(tournoi, "Bravo", "Charlie", 1, 0);   // Bravo : +1
-        jouer(tournoi, "Alpha", "Bravo",   0, 0);   // 4 points chacun
+        jouer(tournoi, "Gen.G", "T1", 5, 0);   // Gen.G : +5
+        jouer(tournoi, "Hanwha Life Esports", "T1", 1, 0);   // Hanwha Life Esports : +1
+        jouer(tournoi, "Gen.G", "Hanwha Life Esports",   0, 0);   // 4 points chacun
 
         List<LigneClassement> classement = poule.calculerClassement(tournoi);
 
         assertThat(classement.get(0).points()).isEqualTo(classement.get(1).points());
         assertThat(classement).extracting(l -> l.equipe().nom())
-            .startsWith("Alpha", "Bravo");
+            .startsWith("Gen.G", "Hanwha Life Esports");
     }
 
     @Test
     @DisplayName("RG-73 : à points et différence égaux, les points marqués départagent")
     void critere3PointsMarques() {
-        Tournoi tournoi = poule("Alpha", "Bravo", "Charlie");
+        Tournoi tournoi = poule("Gen.G", "Hanwha Life Esports", "T1");
         tournoi.demarrer(poule.genererMatchs(tournoi));
-        jouer(tournoi, "Alpha", "Charlie", 3, 1);   // Alpha : +2, marqués 3
-        jouer(tournoi, "Bravo", "Charlie", 2, 0);   // Bravo : +2, marqués 2
-        jouer(tournoi, "Alpha", "Bravo",   1, 1);
+        jouer(tournoi, "Gen.G", "T1", 3, 1);   // Gen.G : +2, marqués 3
+        jouer(tournoi, "Hanwha Life Esports", "T1", 2, 0);   // Hanwha Life Esports : +2, marqués 2
+        jouer(tournoi, "Gen.G", "Hanwha Life Esports",   1, 1);
 
         List<LigneClassement> classement = poule.calculerClassement(tournoi);
         LigneClassement premier = classement.get(0);
@@ -135,40 +135,40 @@ class ClassementPouleTest {
         assertThat(premier.points()).isEqualTo(second.points());
         assertThat(premier.difference()).isEqualTo(second.difference());
         assertThat(premier.marques()).isGreaterThan(second.marques());
-        assertThat(premier.equipe().nom()).isEqualTo("Alpha");
+        assertThat(premier.equipe().nom()).isEqualTo("Gen.G");
     }
 
     @Test
     @DisplayName("RG-74 : à égalité parfaite, la confrontation directe l'emporte "
                + "sur l'ordre alphabétique")
     void critere4ConfrontationDirecte() {
-        Tournoi tournoi = poule("Alpha", "Zulu", "Bravo", "Delta");
+        Tournoi tournoi = poule("Gen.G", "Nongshim RedForce", "Hanwha Life Esports", "KT Rolster");
         tournoi.demarrer(poule.genererMatchs(tournoi));
-        jouer(tournoi, "Zulu",  "Alpha", 1, 0);
-        jouer(tournoi, "Alpha", "Delta", 2, 1);
-        jouer(tournoi, "Bravo", "Alpha", 1, 0);
-        jouer(tournoi, "Bravo", "Zulu",  1, 0);
-        jouer(tournoi, "Delta", "Zulu",  2, 1);
-        jouer(tournoi, "Bravo", "Delta", 3, 0);
+        jouer(tournoi, "Nongshim RedForce",  "Gen.G", 1, 0);
+        jouer(tournoi, "Gen.G", "KT Rolster", 2, 1);
+        jouer(tournoi, "Hanwha Life Esports", "Gen.G", 1, 0);
+        jouer(tournoi, "Hanwha Life Esports", "Nongshim RedForce",  1, 0);
+        jouer(tournoi, "KT Rolster", "Nongshim RedForce",  2, 1);
+        jouer(tournoi, "Hanwha Life Esports", "KT Rolster", 3, 0);
 
         List<LigneClassement> classement = poule.calculerClassement(tournoi);
-        LigneClassement zulu  = classement.get(1);
-        LigneClassement alpha = classement.get(2);
+        LigneClassement nongshim  = classement.get(1);
+        LigneClassement genG = classement.get(2);
 
         // Strictement identiques sur les trois premiers critères...
-        assertThat(zulu.points()).isEqualTo(alpha.points());
-        assertThat(zulu.difference()).isEqualTo(alpha.difference());
-        assertThat(zulu.marques()).isEqualTo(alpha.marques());
+        assertThat(nongshim.points()).isEqualTo(genG.points());
+        assertThat(nongshim.difference()).isEqualTo(genG.difference());
+        assertThat(nongshim.marques()).isEqualTo(genG.marques());
 
-        // ...mais Zulu a gagné leur duel, il passe devant malgré l'alphabet.
-        assertThat(zulu.equipe().nom()).isEqualTo("Zulu");
-        assertThat(alpha.equipe().nom()).isEqualTo("Alpha");
+        // ...mais Nongshim RedForce a gagné leur duel, il passe devant malgré l'alphabet.
+        assertThat(nongshim.equipe().nom()).isEqualTo("Nongshim RedForce");
+        assertThat(genG.equipe().nom()).isEqualTo("Gen.G");
     }
 
     @Test
     @DisplayName("Le classement ne dépend pas de l'ordre d'inscription des équipes")
     void resultatDeterministe() {
-        List<String> noms = new java.util.ArrayList<>(List.of("Alpha", "Bravo", "Charlie", "Delta"));
+        List<String> noms = new java.util.ArrayList<>(List.of("Gen.G", "Hanwha Life Esports", "T1", "KT Rolster"));
         java.util.Set<List<String>> classementsObtenus = new java.util.HashSet<>();
 
         for (int essai = 0; essai < 20; essai++) {
@@ -176,18 +176,18 @@ class ClassementPouleTest {
 
             Tournoi tournoi = poule(noms.toArray(new String[0]));
             tournoi.demarrer(poule.genererMatchs(tournoi));
-            jouer(tournoi, "Alpha",   "Bravo",   1, 1);
-            jouer(tournoi, "Alpha",   "Delta",   2, 0);
-            jouer(tournoi, "Alpha",   "Charlie", 0, 2);
-            jouer(tournoi, "Bravo",   "Delta",   2, 0);
-            jouer(tournoi, "Bravo",   "Charlie", 0, 2);
-            jouer(tournoi, "Charlie", "Delta",   3, 0);
+            jouer(tournoi, "Gen.G",   "Hanwha Life Esports",   1, 1);
+            jouer(tournoi, "Gen.G",   "KT Rolster",   2, 0);
+            jouer(tournoi, "Gen.G",   "T1", 0, 2);
+            jouer(tournoi, "Hanwha Life Esports",   "KT Rolster",   2, 0);
+            jouer(tournoi, "Hanwha Life Esports",   "T1", 0, 2);
+            jouer(tournoi, "T1", "KT Rolster",   3, 0);
 
             classementsObtenus.add(poule.calculerClassement(tournoi).stream()
                                        .map(l -> l.equipe().nom()).toList());
         }
 
-        // Sans RG-75, l'ordre d'Alpha et Bravo dépendrait du parcours en mémoire.
+        // Sans RG-75, l'ordre d'Gen.G et Hanwha Life Esports dépendrait du parcours en mémoire.
         assertThat(classementsObtenus).hasSize(1);
     }
 

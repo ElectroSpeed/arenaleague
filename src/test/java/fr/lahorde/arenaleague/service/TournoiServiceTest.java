@@ -64,7 +64,7 @@ class TournoiServiceTest {
     @Test
     @DisplayName("RG-21 : une équipe ne peut pas être inscrite deux fois")
     void doubleInscription() {
-        depotEquipes.ajouter(equipe(10L, "Alpha", 3));
+        depotEquipes.ajouter(equipe(10L, "Gen.G", 3));
         service.inscrire(1L, 10L);
 
         assertThatThrownBy(() -> service.inscrire(1L, 10L))
@@ -78,7 +78,7 @@ class TournoiServiceTest {
     @DisplayName("RG-23 : un tournoi sans assez d'équipes ne démarre pas, "
                + "et le message dit quoi faire")
     void effectifInvalideAuDemarrage() {
-        inscrire("Alpha", "Bravo");        // RG-40 en demande 3 minimum
+        inscrire("Gen.G", "Hanwha Life Esports");        // RG-40 en demande 3 minimum
 
         assertThatThrownBy(() -> service.demarrer(1L))
             .isInstanceOf(ValidationException.class)
@@ -91,7 +91,7 @@ class TournoiServiceTest {
     @Test
     @DisplayName("RG-22 : le démarrage génère les matchs et devient irréversible")
     void demarrageNominal() {
-        inscrire("Alpha", "Bravo", "Charlie", "Delta");
+        inscrire("Gen.G", "Hanwha Life Esports", "T1", "KT Rolster");
 
         service.demarrer(1L);
 
@@ -106,7 +106,7 @@ class TournoiServiceTest {
     @Test
     @DisplayName("RG-20 : plus aucune inscription une fois le tournoi démarré")
     void inscriptionApresDemarrage() {
-        inscrire("Alpha", "Bravo", "Charlie", "Delta");
+        inscrire("Gen.G", "Hanwha Life Esports", "T1", "KT Rolster");
         service.demarrer(1L);
 
         depotEquipes.ajouter(equipe(99L, "Echo", 3));
@@ -119,7 +119,7 @@ class TournoiServiceTest {
     @Test
     @DisplayName("RG-20 : plus aucun retrait une fois le tournoi démarré")
     void retraitApresDemarrage() {
-        inscrire("Alpha", "Bravo", "Charlie", "Delta");
+        inscrire("Gen.G", "Hanwha Life Esports", "T1", "KT Rolster");
         service.demarrer(1L);
 
         assertThatThrownBy(() -> service.retirer(1L, 10L))

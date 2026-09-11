@@ -222,7 +222,7 @@ class ForfaitTest {
      */
     private Tournoi demarrer(Format format, DepotMatchEnMemoire depot) {
         Tournoi tournoi = new Tournoi(1L, "Tournoi", LocalDate.of(2026, 10, 9), format, false);
-        for (String nom : List.of("Alpha", "Bravo", "Charlie", "Delta")) {
+        for (String nom : List.of("Gen.G", "Hanwha Life Esports", "T1", "KT Rolster")) {
             tournoi.inscrire(equipeDe(nom));
         }
         List<Match> generes = formats.pour(format).genererMatchs(tournoi);

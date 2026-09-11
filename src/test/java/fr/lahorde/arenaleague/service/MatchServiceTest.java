@@ -33,7 +33,7 @@ class MatchServiceTest {
     @BeforeEach
     void preparer() {
         tournoi = new Tournoi(1L, "Coupe Automne", LocalDate.of(2026, 9, 12), Format.POULE, false);
-        for (String nom : List.of("Alpha", "Bravo", "Charlie", "Delta")) {
+        for (String nom : List.of("Gen.G", "Hanwha Life Esports", "T1", "KT Rolster")) {
             tournoi.inscrire(equipe(nom));
         }
 
@@ -166,7 +166,7 @@ class MatchServiceTest {
         void finaleGenereeAuBonMoment() {
             Tournoi arbre = new Tournoi(2L, "Open Hiver", LocalDate.of(2026, 9, 19),
                                         Format.ELIMINATION_DIRECTE, false);
-            for (String nom : List.of("Alpha", "Bravo", "Charlie", "Delta")) {
+            for (String nom : List.of("Gen.G", "Hanwha Life Esports", "T1", "KT Rolster")) {
                 arbre.inscrire(equipe(nom));
             }
 

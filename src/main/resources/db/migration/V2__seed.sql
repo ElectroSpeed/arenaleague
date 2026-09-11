@@ -32,26 +32,33 @@ INSERT INTO utilisateur (login, mot_de_passe_hash, role) VALUES
 
 -- ---------------------------------------------------------------------
 --  Équipes et joueurs
---  Trois joueurs par équipe : conforme à RG-10 (entre 2 et 5).
+--  Quatre équipes de la LCK coréenne, trois joueurs chacune : conforme
+--  à RG-10 (entre 2 et 5).
+--
+--  Les noms d'équipes ne sont pas interchangeables. Le tableau de
+--  référence du §8.1 repose sur RG-75, le départage alphabétique :
+--  Gen.G et Hanwha Life Esports y sont à égalité parfaite, et seul
+--  l'ordre des noms les sépare. Renommer une équipe sans vérifier cet
+--  ordre casse la démonstration du dernier critère de départage.
 -- ---------------------------------------------------------------------
-INSERT INTO equipe (nom) VALUES ('Alpha'), ('Bravo'), ('Charlie'), ('Delta');
+INSERT INTO equipe (nom) VALUES ('Gen.G'), ('Hanwha Life Esports'), ('T1'), ('KT Rolster');
 
 INSERT INTO joueur (pseudo, equipe_id) VALUES
-  ('Nyx',     (SELECT id FROM equipe WHERE nom = 'Alpha')),
-  ('Orion',   (SELECT id FROM equipe WHERE nom = 'Alpha')),
-  ('Pyra',    (SELECT id FROM equipe WHERE nom = 'Alpha')),
+  ('Chovy',     (SELECT id FROM equipe WHERE nom = 'Gen.G')),
+  ('Peyz',   (SELECT id FROM equipe WHERE nom = 'Gen.G')),
+  ('Canyon',    (SELECT id FROM equipe WHERE nom = 'Gen.G')),
 
-  ('Quill',   (SELECT id FROM equipe WHERE nom = 'Bravo')),
-  ('Rune',    (SELECT id FROM equipe WHERE nom = 'Bravo')),
-  ('Sable',   (SELECT id FROM equipe WHERE nom = 'Bravo')),
+  ('Zeka',   (SELECT id FROM equipe WHERE nom = 'Hanwha Life Esports')),
+  ('Viper',    (SELECT id FROM equipe WHERE nom = 'Hanwha Life Esports')),
+  ('Delight',   (SELECT id FROM equipe WHERE nom = 'Hanwha Life Esports')),
 
-  ('Talon',   (SELECT id FROM equipe WHERE nom = 'Charlie')),
-  ('Umbra',   (SELECT id FROM equipe WHERE nom = 'Charlie')),
-  ('Vega',    (SELECT id FROM equipe WHERE nom = 'Charlie')),
+  ('Faker',   (SELECT id FROM equipe WHERE nom = 'T1')),
+  ('Gumayusi',   (SELECT id FROM equipe WHERE nom = 'T1')),
+  ('Keria',    (SELECT id FROM equipe WHERE nom = 'T1')),
 
-  ('Wisp',    (SELECT id FROM equipe WHERE nom = 'Delta')),
-  ('Xeno',    (SELECT id FROM equipe WHERE nom = 'Delta')),
-  ('Yara',    (SELECT id FROM equipe WHERE nom = 'Delta'));
+  ('Bdd',    (SELECT id FROM equipe WHERE nom = 'KT Rolster')),
+  ('Deft',    (SELECT id FROM equipe WHERE nom = 'KT Rolster')),
+  ('Cuzz',    (SELECT id FROM equipe WHERE nom = 'KT Rolster'));
 
 
 -- =====================================================================
@@ -65,7 +72,7 @@ INSERT INTO tournoi (nom, date_debut, format, demarre) VALUES
 INSERT INTO inscription (tournoi_id, equipe_id)
 SELECT (SELECT id FROM tournoi WHERE nom = 'Coupe Automne'), id
 FROM   equipe
-WHERE  nom IN ('Alpha', 'Bravo', 'Charlie', 'Delta');
+WHERE  nom IN ('Gen.G', 'Hanwha Life Esports', 'T1', 'KT Rolster');
 
 -- Round-robin aller simple : 4 équipes = 6 matchs (RG-41).
 -- Quatre sont terminés, deux restent à jouer pour la démonstration.
@@ -73,32 +80,33 @@ WHERE  nom IN ('Alpha', 'Bravo', 'Charlie', 'Delta');
 -- --- Matchs terminés ---
 INSERT INTO rencontre (tournoi_id, tour, equipe_a_id, equipe_b_id, score_a, score_b, etat, arbitre_id) VALUES
   ((SELECT id FROM tournoi WHERE nom = 'Coupe Automne'), 1,
-   (SELECT id FROM equipe WHERE nom = 'Alpha'), (SELECT id FROM equipe WHERE nom = 'Bravo'),
+   (SELECT id FROM equipe WHERE nom = 'Gen.G'), (SELECT id FROM equipe WHERE nom = 'Hanwha Life Esports'),
    1, 1, 'TERMINE', (SELECT id FROM utilisateur WHERE login = 'arbitre')),
 
   ((SELECT id FROM tournoi WHERE nom = 'Coupe Automne'), 1,
-   (SELECT id FROM equipe WHERE nom = 'Alpha'), (SELECT id FROM equipe WHERE nom = 'Delta'),
+   (SELECT id FROM equipe WHERE nom = 'Gen.G'), (SELECT id FROM equipe WHERE nom = 'KT Rolster'),
    2, 0, 'TERMINE', (SELECT id FROM utilisateur WHERE login = 'arbitre')),
 
   ((SELECT id FROM tournoi WHERE nom = 'Coupe Automne'), 1,
-   (SELECT id FROM equipe WHERE nom = 'Alpha'), (SELECT id FROM equipe WHERE nom = 'Charlie'),
+   (SELECT id FROM equipe WHERE nom = 'Gen.G'), (SELECT id FROM equipe WHERE nom = 'T1'),
    0, 2, 'TERMINE', (SELECT id FROM utilisateur WHERE login = 'arbitre')),
 
   ((SELECT id FROM tournoi WHERE nom = 'Coupe Automne'), 1,
-   (SELECT id FROM equipe WHERE nom = 'Bravo'), (SELECT id FROM equipe WHERE nom = 'Delta'),
+   (SELECT id FROM equipe WHERE nom = 'Hanwha Life Esports'), (SELECT id FROM equipe WHERE nom = 'KT Rolster'),
    2, 0, 'TERMINE', (SELECT id FROM utilisateur WHERE login = 'arbitre'));
 
 -- --- Matchs à jouer ---
--- Saisir Bravo 0 – 2 Charlie puis Charlie 3 – 0 Delta reproduit exactement
--- le tableau de référence du §8.1 des règles de gestion : Alpha et Bravo
+-- Saisir Hanwha Life Esports 0 – 2 T1 puis T1 3 – 0 KT Rolster reproduit
+-- exactement le tableau de référence du §8.1 des règles de gestion :
+-- Gen.G et Hanwha Life Esports
 -- s'y retrouvent à égalité parfaite, départagés par le seul RG-75.
 -- C'est le jeu de test attendu par la tâche 2.8.
 INSERT INTO rencontre (tournoi_id, tour, equipe_a_id, equipe_b_id, etat) VALUES
   ((SELECT id FROM tournoi WHERE nom = 'Coupe Automne'), 1,
-   (SELECT id FROM equipe WHERE nom = 'Bravo'), (SELECT id FROM equipe WHERE nom = 'Charlie'), 'PLANIFIE'),
+   (SELECT id FROM equipe WHERE nom = 'Hanwha Life Esports'), (SELECT id FROM equipe WHERE nom = 'T1'), 'PLANIFIE'),
 
   ((SELECT id FROM tournoi WHERE nom = 'Coupe Automne'), 1,
-   (SELECT id FROM equipe WHERE nom = 'Charlie'), (SELECT id FROM equipe WHERE nom = 'Delta'), 'PLANIFIE');
+   (SELECT id FROM equipe WHERE nom = 'T1'), (SELECT id FROM equipe WHERE nom = 'KT Rolster'), 'PLANIFIE');
 
 
 -- =====================================================================
@@ -113,14 +121,14 @@ INSERT INTO tournoi (nom, date_debut, format, demarre) VALUES
 INSERT INTO inscription (tournoi_id, equipe_id)
 SELECT (SELECT id FROM tournoi WHERE nom = 'Open Hiver'), id
 FROM   equipe
-WHERE  nom IN ('Alpha', 'Bravo', 'Charlie', 'Delta');
+WHERE  nom IN ('Gen.G', 'Hanwha Life Esports', 'T1', 'KT Rolster');
 
 -- 4 équipes = puissance de 2 (RG-30), donc 3 matchs sur 2 tours (RG-32).
 -- Seules les demi-finales existent : la finale ne sera générée que lorsque
 -- les deux seront terminées (RG-35). C'est le moment fort de la démo.
 INSERT INTO rencontre (tournoi_id, tour, equipe_a_id, equipe_b_id, etat) VALUES
   ((SELECT id FROM tournoi WHERE nom = 'Open Hiver'), 1,
-   (SELECT id FROM equipe WHERE nom = 'Alpha'), (SELECT id FROM equipe WHERE nom = 'Bravo'), 'PLANIFIE'),
+   (SELECT id FROM equipe WHERE nom = 'Gen.G'), (SELECT id FROM equipe WHERE nom = 'Hanwha Life Esports'), 'PLANIFIE'),
 
   ((SELECT id FROM tournoi WHERE nom = 'Open Hiver'), 1,
-   (SELECT id FROM equipe WHERE nom = 'Charlie'), (SELECT id FROM equipe WHERE nom = 'Delta'), 'PLANIFIE');
+   (SELECT id FROM equipe WHERE nom = 'T1'), (SELECT id FROM equipe WHERE nom = 'KT Rolster'), 'PLANIFIE');

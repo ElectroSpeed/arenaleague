@@ -140,16 +140,21 @@ et c'est **aussi** le jeu de données de `V2__seed.sql` : un seul jeu de
 chiffres pour la démo et pour les tests.
 
 ```
-Rang Equipe    Pts  J  V  N  D  BM BE Diff
- 1   Charlie    9   3  3  0  0   7  0  +7
- 2   Alpha      4   3  1  1  1   3  3   0
- 3   Bravo      4   3  1  1  1   3  3   0
- 4   Delta      0   3  0  0  3   0  7  -7
+Rang Equipe                Pts  J  V  N  D  BM BE Diff
+ 1   T1                     9   3  3  0  0   7  0  +7
+ 2   Gen.G                  4   3  1  1  1   3  3   0
+ 3   Hanwha Life Esports    4   3  1  1  1   3  3   0
+ 4   KT Rolster             0   3  0  0  3   0  7  -7
 ```
 
-Alpha et Bravo sont à égalité parfaite sur les points, la différence, les
-points marqués **et** leur confrontation directe (nul 1–1). Seul RG-75 les
-départage. **Si ce tableau change, quelque chose est cassé.**
+Gen.G et Hanwha Life Esports sont à égalité parfaite sur les points, la
+différence, les points marqués **et** leur confrontation directe (nul 1–1).
+Seul RG-75 les départage. **Si ce tableau change, quelque chose est cassé.**
+
+Les noms d'équipes ne sont donc **pas interchangeables** : c'est l'ordre
+alphabétique qui place Gen.G devant Hanwha Life Esports. Renommer une équipe
+sans vérifier cet ordre casse la démonstration du dernier critère de
+départage — le seul argument qui justifie son existence.
 
 ---
 
@@ -201,7 +206,7 @@ le chemin de CE-01.
 
 **Avant chaque répétition de la démonstration**, supprimer `data/` : Flyway
 rejoue le seed. Le tableau de référence du classement n'apparaît que si l'on
-saisit exactement Bravo 0–2 Charlie puis Charlie 3–0 Delta.
+saisit exactement Hanwha Life Esports 0–2 T1 puis T1 3–0 KT Rolster.
 
 **Environnement** : ni Maven ni JDK ne sont installés séparément sur le poste.
 Les deux viennent d'IntelliJ IDEA Community (Maven 3.9.9, JBR 21) :

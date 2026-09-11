@@ -45,7 +45,7 @@ class CasErreurDemonstrationTest {
         // Le même jeu que la migration V2, donc le même que la démonstration.
         coupeAutomne = new Tournoi(1L, "Coupe Automne", LocalDate.of(2026, 9, 12),
                                    Format.POULE, false);
-        for (String nom : List.of("Alpha", "Bravo", "Charlie", "Delta")) {
+        for (String nom : List.of("Gen.G", "Hanwha Life Esports", "T1", "KT Rolster")) {
             coupeAutomne.inscrire(equipeDe(nom, 3));
         }
 
