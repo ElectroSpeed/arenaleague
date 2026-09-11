@@ -55,7 +55,14 @@ psql -U postgres -f scripts/reinitialiser-base.sql
 Le **même** SQL de migration s'applique aux deux moteurs : H2 tourne en
 mode compatibilité PostgreSQL.
 
-### 3. Compiler et lancer
+### 3. Lancer
+
+Le plus simple, une fois le projet construit : **double-cliquer sur
+`lancer.bat`**. Il se place dans le dossier du projet, trouve un JDK — via
+`JAVA_HOME`, le `PATH`, ou celui embarqué dans IntelliJ — et démarre le jar.
+La console reste ouverte et affiche le journal de l'application.
+
+### 3 bis. Compiler et lancer à la main
 
 ```bash
 mvn clean install
