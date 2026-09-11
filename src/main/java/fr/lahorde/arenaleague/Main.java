@@ -47,6 +47,14 @@ public class Main extends Application {
         GestionnaireErreurs.installerFiletDeSecurite(contexte.config().profil());
 
         new Vues(contexte, fenetre).afficher("login", "Connexion");
+
+        // En deçà, le tableau du classement et le panneau de détail de la
+        // saisie se chevauchent. La taille au-delà appartient à
+        // l'utilisateur : la fenêtre conserve désormais ce qu'il en fait
+        // d'un écran à l'autre.
+        fenetre.setMinWidth(1000);
+        fenetre.setMinHeight(660);
+
         fenetre.show();
     }
 

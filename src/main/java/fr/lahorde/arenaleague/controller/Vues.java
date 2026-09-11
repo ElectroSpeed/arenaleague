@@ -26,6 +26,14 @@ public final class Vues {
     private static final String CHEMIN_FXML = "/fxml/";
     private static final String FEUILLE_DE_STYLE = "/css/app.css";
 
+    /**
+     * Taille d'ouverture, choisie pour l'écran le plus dense — la saisie des
+     * résultats, qui affiche les matchs, le classement et le détail côte à
+     * côte. L'écran de connexion s'y centre sans gêne.
+     */
+    private static final double LARGEUR_INITIALE = 1140;
+    private static final double HAUTEUR_INITIALE = 740;
+
     private final AppContext contexte;
     private final Stage fenetre;
 
@@ -89,14 +97,27 @@ public final class Vues {
             return;
         }
 
-        Scene scene = new Scene(racine);
-        var style = getClass().getResource(FEUILLE_DE_STYLE);
-        if (style != null) {
-            scene.getStylesheets().add(style.toExternalForm());
+        // La scène n'est construite qu'une fois ; ensuite, seule sa racine
+        // change.
+        //
+        // setScene() redimensionne la fenêtre à la taille préférée de la vue
+        // installée. Comme login.fxml déclare 560x620 et les autres écrans
+        // 1080x700, en recréer une à chaque navigation faisait sauter la
+        // fenêtre d'une taille à l'autre et effaçait tout redimensionnement
+        // de l'utilisateur, plein écran compris.
+        Scene scene = fenetre.getScene();
+        if (scene == null) {
+            scene = new Scene(racine, LARGEUR_INITIALE, HAUTEUR_INITIALE);
+            var style = getClass().getResource(FEUILLE_DE_STYLE);
+            if (style != null) {
+                scene.getStylesheets().add(style.toExternalForm());
+            }
+            fenetre.setScene(scene);
+            fenetre.centerOnScreen();
+        } else {
+            scene.setRoot(racine);
         }
-        fenetre.setScene(scene);
         fenetre.setTitle("ArenaLeague — " + titre);
-        fenetre.centerOnScreen();
     }
 
     private Parent charger(String nomDeVue) {
