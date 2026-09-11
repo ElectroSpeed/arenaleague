@@ -5,8 +5,13 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -38,6 +43,20 @@ public final class GestionnaireErreurs {
 
     private static final DateTimeFormatter HORODATAGE =
         DateTimeFormatter.ofPattern("HH:mm:ss");
+
+    /**
+     * Journal sur disque, à côté de l'application.
+     *
+     * La console ne suffit pas : lancée par lancer.bat, l'application
+     * tourne sous javaw, qui n'en ouvre aucune — et rediriger la sortie
+     * depuis le script ne fonctionne pas, `start` appliquant la
+     * redirection à lui-même plutôt qu'au processus lancé.
+     *
+     * L'écrire depuis l'application règle le problème une fois pour
+     * toutes : le journal existe quel que soit le mode de lancement, jar,
+     * Maven ou IDE.
+     */
+    private static final Path JOURNAL = Path.of("journal.log");
 
     private final Label encart;
     private final String profil;
@@ -132,13 +151,29 @@ public final class GestionnaireErreurs {
     private void journaliser(String operation, RuntimeException e, boolean avecPile) {
         String entete = "[" + LocalDateTime.now().format(HORODATAGE) + "] "
                       + (avecPile ? "PANNE" : "refus") + " — " + operation + " — " + e;
-        if (!avecPile) {
-            System.err.println(entete);
-            return;
+        String ligne = entete;
+        if (avecPile) {
+            StringWriter tampon = new StringWriter();
+            e.printStackTrace(new PrintWriter(tampon));
+            ligne = entete + System.lineSeparator() + tampon;
         }
-        StringWriter tampon = new StringWriter();
-        e.printStackTrace(new PrintWriter(tampon));
-        System.err.println(entete + System.lineSeparator() + tampon);
+        System.err.println(ligne);
+        ecrireAuJournal(ligne);
+    }
+
+    /**
+     * Un journal qui échoue ne doit jamais faire échouer l'application :
+     * disque plein, dossier en lecture seule, peu importe — on abandonne
+     * la trace, pas l'action de l'utilisateur.
+     */
+    private static void ecrireAuJournal(String ligne) {
+        try {
+            Files.writeString(JOURNAL, ligne + System.lineSeparator(),
+                StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (IOException | RuntimeException ignore) {
+            // Volontairement silencieux : voir le commentaire ci-dessus.
+        }
     }
 
     private static void boiteErreur(String titre, String message) {
